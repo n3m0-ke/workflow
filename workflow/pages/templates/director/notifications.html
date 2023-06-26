@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- PAGE TITLE HERE -->
+    <title>Director Notifications Page</title>
+
+	{% include 'workflow-styles.html' %}
+	{% block workflow-styles-section %}
+	{% endblock %}
+
+</head>
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+		{% include 'director/header-section.html' %}
+		{% block nav-header-section %}
+		{% endblock %}
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+            <div class="container-fluid">
+				<div class="row page-titles">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item active"><a href="javascript:void(0)">Notifications</a></li>
+					</ol>
+                </div>
+                <!-- row -->
+                <div class="col-12">
+                        <div class="card">
+                            <div class="card-header  border-0 pb-0">
+                                <h4 class="card-title">Notifications</h4>
+                            </div>
+                            <div class="card-body"> 
+                                <div id="DZ_W_Todo1" class="widget-media dz-scroll height370 ps ps--active-y">
+                                    <ul class="timeline">
+                                        <li>
+                                            <div class="timeline-panel">
+												<div class="media me-2">
+													<img alt="image" width="50" src="images/avatar/1.jpg">
+												</div>
+                                                <div class="media-body">
+													<h5 class="mb-1">Journalist Added a Photo</h5>
+													<small class="d-block">29 July 2023 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-primary light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+                                        <li>
+                                            <div class="timeline-panel">
+												<div class="media me-2 media-info">
+													SC
+												</div>
+												<div class="media-body">
+													<h5 class="mb-1">Article Submitted Successfuly</h5>
+													<small class="d-block">29 July 2023 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-info light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+                                        <li>
+                                            <div class="timeline-panel">
+                                                <div class="media me-2 media-success">
+													<i class="fa fa-home"></i>
+												</div>
+												<div class="media-body">
+													<h5 class="mb-1">Reminder : Deadline 5 days away!</h5>
+													<small class="d-block">29 July 2021 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+										<li>
+                                            <div class="timeline-panel">
+												<div class="media me-2">
+													<img alt="image" width="50" src="images/avatar/1.jpg">
+												</div>
+                                                <div class="media-body">
+													<h5 class="mb-1">Journalist Added a Photo</h5>
+													<small class="d-block">29 July 2023 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-primary light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+                                        <li>
+                                            <div class="timeline-panel">
+												<div class="media me-2 media-info">
+													SC
+												</div>
+												<div class="media-body">
+													<h5 class="mb-1">Article Submitted Successfuly</h5>
+													<small class="d-block">29 July 2023 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-info light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+                                        <li>
+                                            <div class="timeline-panel">
+                                                <div class="media me-2 media-success">
+													<i class="fa fa-home"></i>
+												</div>
+												<div class="media-body">
+													<h5 class="mb-1">Reminder : Deadline 5 days away!</h5>
+													<small class="d-block">29 July 2021 - 02:26 PM</small>
+												</div>
+												<div class="dropdown">
+													<button type="button" class="btn btn-success light sharp" data-bs-toggle="dropdown">
+														<svg width="18px" height="18px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+													</button>
+													<div class="dropdown-menu dropdown-menu-end">
+														<a class="dropdown-item" href="#">Delete</a>
+													</div>
+												</div>
+											</div>
+                                        </li>
+                                    </ul>
+                                <div class="ps__rail-x" style="left: 0px; bottom: -85px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 85px; height: 370px; right: 411px;"><div class="ps__thumb-y" tabindex="0" style="top: 70px; height: 300px;"></div></div></div>
+                            </div>
+                        </div>
+					</div>
+                
+            </div>
+			
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright © Designed &amp; Developed by Mike 2023</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+		<!--**********************************
+           Support ticket button start
+        ***********************************-->
+
+        <!--**********************************
+           Support ticket button end
+        ***********************************-->
+
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+	{% include 'workflow-scripts.html' %}
+	{% block workflow-scripts-section %}
+	{% endblock %}	
+	
+	
+	
+</body>
+</html>

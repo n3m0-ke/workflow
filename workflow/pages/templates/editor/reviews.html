@@ -1,0 +1,430 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- PAGE TITLE HERE -->
+    <title>Editor Reviews Page</title>
+
+	{% include 'workflow-styles.html' %}
+	{% block workflow-styles-section %}
+	{% endblock %}
+
+</head>
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+		{% include 'editor/header-section.html' %}
+		{% block nav-header-section %}
+		{% endblock %}
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+            <div class="container-fluid">
+                <div class="d-flex flex-wrap d-review justify-content-between">
+					<div class="input-group search-area mb-4">
+						<input type="text" class="form-control" placeholder="Search here">
+						<span class="input-group-text"><i class="flaticon-381-search-2"></i></span>
+					</div>
+					<div class="d-flex align-items-center flex-wrap">
+						<select class="default-select style-1 ms-3 d-inline-block mb-4" aria-label="Default select example">
+							<option selected>Newest</option>
+							<option value="1">Old</option>
+						</select>
+					</div>	
+				</div>
+                <div class="row">
+					<div class="col-xl-12">
+						<ul class="nav nav-pills review-tab">
+							<li class="nav-item">
+								<a href="#navpills-1" class="nav-link active" data-bs-toggle="tab" aria-expanded="false">ALL REVIEWS</a>
+							</li>
+							<li class="nav-item">
+								<a href="#navpills-2" class="nav-link" data-bs-toggle="tab" aria-expanded="false">ANONYMOUS USERS</a>
+							</li>
+							<li class="nav-item">
+								<a href="#navpills-3" class="nav-link" data-bs-toggle="tab" aria-expanded="true">REGISTERED USERS</a>
+							</li>
+						</ul>
+						
+                        <div class="tab-content">
+							<div id="navpills-1" class="tab-pane active">
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox1" required="">
+												<label class="custom-control-label" for="customCheckBox1"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/1.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox2" required="">
+												<label class="custom-control-label" for="customCheckBox2"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/2.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox3" required="">
+												<label class="custom-control-label" for="customCheckBox3"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/3.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox4" required="">
+												<label class="custom-control-label" for="customCheckBox4"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/4.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="navpills-2" class="tab-pane">
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox1_2" required="">
+												<label class="custom-control-label" for="customCheckBox1_2"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/1.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox2_2" required="">
+												<label class="custom-control-label" for="customCheckBox2_2"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/2.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								
+							</div>
+							<div id="navpills-3" class="tab-pane">
+									<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox2_1" required="">
+												<label class="custom-control-label" for="customCheckBox2_1"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/2.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox3_1" required="">
+												<label class="custom-control-label" for="customCheckBox3_1"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/3.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+								<div class="card review-table">
+									<div class="media">
+										<div class="checkbox me-3 align-self-center">
+											<div class="custom-control custom-checkbox checkbox">
+												<input type="checkbox" class="form-check-input" checked="" id="customCheckBox4_1" required="">
+												<label class="custom-control-label" for="customCheckBox4_1"></label>
+											</div>
+										</div>
+										<img class="me-3 img-fluid rounded" width="110" src="./images/avatar/4.jpg" alt="DexignZone">
+										<div class="media-body">
+											<h3 class="fs-20 text-black font-w600 mb-3">User Name
+												<span class="star-review ms-3 d-inline-block">
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-orange"></i>
+													<i class="fa fa-star text-gray"></i>
+												</span>
+											</h3>
+											<p>Review statement from the user who has read and decided to review the article on which the journalist worked on</p>
+											<span class="fs-15">Sunday, 24 July 2021   04:55 PM</span>
+										</div>
+										<div class="media-footer d-flex align-self-center">
+											<div class="disease me-5">
+												<p class="mb-1 fs-14">Article -> </p>
+												<h4 class="text-success">Article Identifying Name</h4>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+				   </div>
+					<div class="col-xl-12">
+						<div class="d-md-flex d-block align-items-center mt-4">
+							<p>Showing 10 from 46 data</p>
+							<nav class="ms-auto">
+								<ul class="pagination pagination-gutter pagination-danger">
+									<li class="page-item page-indicator">
+										<a class="page-link" href="javascript:void()">
+											<i class="la la-angle-left"></i></a>
+									</li>
+									<li class="page-item active"><a class="page-link" href="javascript:void()">1</a>
+									</li>
+									<li class="page-item"><a class="page-link" href="javascript:void()">2</a></li>
+									<li class="page-item"><a class="page-link" href="javascript:void()">3</a></li>
+									<li class="page-item"><a class="page-link" href="javascript:void()">4</a></li>
+									<li class="page-item page-indicator">
+										<a class="page-link" href="javascript:void()">
+											<i class="la la-angle-right"></i></a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
+            </div>
+			
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright © Designed &amp; Developed by Mike 2023</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+		<!--**********************************
+           Support ticket button start
+        ***********************************-->
+
+        <!--**********************************
+           Support ticket button end
+        ***********************************-->
+
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+	{% include 'workflow-scripts.html' %}
+	{% block workflow-scripts-section %}
+	{% endblock %}	
+	
+	
+	
+</body>
+</html>

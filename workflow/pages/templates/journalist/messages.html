@@ -1,0 +1,439 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- PAGE TITLE HERE -->
+    <title>Journalist Messages Page</title>
+    
+	{% include 'workflow-styles.html' %}
+	{% block workflow-styles-section %}
+	{% endblock %}
+</head>
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+		{% include 'journalist/header-section.html' %}
+		{% block nav-header-section %}
+		{% endblock %}
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+            <div class="container-fluid">
+				<div class="row page-titles">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item active"><a href="javascript:void(0)">Messages</a></li>
+						<li class="breadcrumb-item"><a href="javascript:void(0)">Inbox</a></li>
+					</ol>
+                </div>
+                <!-- row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+								<div class="row">
+									<div class="col-lg-3">
+										<div class="email-left-box">
+											<div class="p-0">
+												<a href="#composeModalToggle" role="button" data-bs-toggle="modal"  class="btn btn-primary btn-block">Compose</a>
+
+                                                <!-- Compose modal -->
+
+                                                <div class="modal fade" id="composeModalToggle" tabindex="-1" aria-labelledby="composeModalToggleLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="composeModalToggleLabel">New message</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="col-lg-12">
+                                                                    <div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+                                                                        <div class="toolbar mb-4" role="toolbar">
+                                                                            <div class="btn-group mb-1">
+                                                                                <button type="button" class="btn btn-primary light px-3"><i class="fa fa-archive"></i></button>
+                                                                                <button type="button" class="btn btn-primary light px-3"><i class="fa fa-exclamation-circle"></i></button>
+                                                                                <button type="button" class="btn btn-primary light px-3"><i class="fa fa-trash"></i></button>
+                                                                            </div>
+                                                                            <div class="btn-group mb-1">
+                                                                                <button type="button" class="btn btn-primary light dropdown-toggle px-3" data-bs-toggle="dropdown">
+                                                                                    <i class="fa fa-folder"></i> <b class="caret m-l-5"></b>
+                                                                                </button>
+                                                                                <div class="dropdown-menu"> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Social</a> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Promotions</a> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Updates</a>
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="btn-group mb-1">
+                                                                                <button type="button" class="btn btn-primary light dropdown-toggle px-3" data-bs-toggle="dropdown">
+                                                                                    <i class="fa fa-tag"></i> <b class="caret m-l-5"></b>
+                                                                                </button>
+                                                                                <div class="dropdown-menu"> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Updates</a> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Social</a> 
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Promotions</a>
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Forums</a>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="btn-group mb-1">
+                                                                                <button type="button" class="btn btn-primary light dropdown-toggle v" data-bs-toggle="dropdown">More <span class="caret m-l-5"></span>
+                                                                                </button>
+                                                                                <div class="dropdown-menu"> <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a> <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a>
+                                                                                    <a class="dropdown-item" href="javascript: void(0);">Add Star</a> <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="compose-content">
+                                                                            <form action="#">
+                                                                                <div class="mb-3">
+                                                                                    <input type="text" class="form-control bg-transparent" placeholder=" To:">
+                                                                                </div>
+                                                                                <div class="mb-3">
+                                                                                    <input type="text" class="form-control bg-transparent" placeholder=" Subject:">
+                                                                                </div>
+                                                                                <div class="mb-3">
+                                                                                    <textarea id="email-compose-editor" class="textarea_editor form-control bg-transparent" rows="8" placeholder="Enter text ..."></textarea>
+                                                                                </div>
+                                                                                <h5 class="mb-4"><i class="fa fa-paperclip"></i> Attatchment</h5>
+                                                                                <div class="fallback">
+                                                                                    <input name="file" type="file" multiple />
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="text-start mt-4 mb-3">
+                                                                            <button class="btn btn-primary btn-sl-sm me-2" data-bs-dismiss="modal" type="button"><span class="me-2"><i class="fa fa-paper-plane"></i></span>Send</button>
+                                                                            <button class="btn btn-danger light btn-sl-sm" data-bs-dismiss="modal" type="button"><span class="me-2"><i class="fa fa-times"></i></span>Discard</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                      </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <!-- End of compose modal -->
+											</div>
+											<div class="mail-list rounded mt-4">
+												<a href="email-inbox.html" class="list-group-item active"><i
+														class="fa fa-inbox font-18 align-middle me-2"></i> Inbox <span
+														class="badge badge-primary badge-sm float-end">19</span> </a>
+												<a href="javascript:void()" class="list-group-item"><i
+														class="fa fa-paper-plane font-18 align-middle me-2"></i>Sent</a>
+											</div>
+											<div class="mail-list rounded overflow-hidden mt-4">
+												<div class="intro-title d-flex justify-content-between my-0">
+													<h5>
+                                                        Contact
+                                                    </h5>
+													<i class="icon-arrow-down" aria-hidden="true"></i>
+												</div>
+												<a href="#composeModalToggle" role="button" data-bs-toggle="modal" class="list-group-item">
+                                                    <span class="icon-warning">
+                                                        <i class="fa fa-circle" aria-hidden="true"></i>
+                                                    </span>
+													contact Editor 
+                                                </a>
+												<a href="#composeModalToggle" role="button" data-bs-toggle="modal" class="list-group-item">
+                                                    <span class="icon-warning">
+                                                        <i class="fa fa-circle" aria-hidden="true"></i>
+                                                    </span>
+													contact Fellow 
+                                                </a>
+												<a href="#composeModalToggle" role="button" data-bs-toggle="modal" class="list-group-item">
+                                                    <span class="icon-warning">
+                                                        <i class="fa fa-circle" aria-hidden="true"></i>
+                                                    </span>
+													contact Journalist 
+                                                </a>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-9">
+										<div class="email-right-box">
+											<div role="toolbar" class="toolbar ms-1 ms-sm-0">
+												<div class="btn-group mb-1">
+													<div class="form-check custom-checkbox">
+														<input type="checkbox" class="form-check-input" id="checkAll">
+														<label class="form-check-label" for="checkAll"></label>
+													</div>
+												</div>
+												<div class="btn-group mb-1">
+													<button class="btn btn-primary light px-3" type="button"><i class="ti-reload"></i>
+													</button>
+												</div>
+												<div class="btn-group mb-1">
+													<button aria-expanded="false" data-bs-toggle="dropdown" class="btn btn-primary px-3 light dropdown-toggle" type="button">More <span
+															class="caret"></span>
+													</button>
+													<div class="dropdown-menu"> <a href="javascript: void(0);" class="dropdown-item">Mark as Unread</a> 
+													</div>
+												</div>
+											</div>
+											<div class="email-list mt-3">
+												<div class="message">
+													<div>
+														<div class="d-flex message-single">
+															<div class="ps-1 align-self-center">
+																<div class="form-check custom-checkbox">
+																	<input type="checkbox" class="form-check-input" id="checkbox2">
+																	<label class="form-check-label" for="checkbox2"></label>
+																</div>
+															</div>
+															<div class="ms-2">
+																<button class="border-0 bg-transparent align-middle p-0"><i
+																		class="fa fa-star" aria-hidden="true"></i></button>
+															</div>
+														</div>
+														<a href="#viewModalToggle" role="button" data-bs-toggle="modal" class="col-mail col-mail-2">
+															<div class="subject">Subject of message</div>
+															<div class="date">11:49 am</div>
+														</a>
+													</div>
+												</div>
+
+                                                <!-- Compose modal -->
+
+                                                <div class="modal fade" id="viewModalToggle" tabindex="-1" aria-labelledby="viewModalToggleLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="viewModalToggleLabel">New message</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="col-lg-12">
+                                                                    <div class="email-right-box">
+                                                                        <div class="row">
+                                                                            <div class="col-12">
+                                                                                <div class="right-box-padding">
+                                                                                    <div class="toolbar mb-4 mt-0" role="toolbar">
+                                                                                        <div class="btn-group mb-1">
+                                                                                            <button type="button" class="btn btn-primary light px-3"><i class="fa fa-archive"></i></button>
+                                                                                            <button type="button" class="btn btn-primary light px-3"><i class="fa fa-exclamation-circle"></i></button>
+                                                                                            <button type="button" class="btn btn-primary light px-3"><i class="fa fa-trash"></i></button>
+                                                                                        </div>
+                                                                                        <div class="btn-group mb-1">
+                                                                                            <button type="button" class="btn btn-primary light dropdown-toggle v" data-bs-toggle="dropdown">More <span class="caret m-l-5"></span>
+                                                                                            </button>
+                                                                                            <div class="dropdown-menu"> <a class="dropdown-item" href="javascript: void(0);">Mark as Unread</a> <a class="dropdown-item" href="javascript: void(0);">Add to Tasks</a>
+                                                                                                <a class="dropdown-item" href="javascript: void(0);">Add Star</a> <a class="dropdown-item" href="javascript: void(0);">Mute</a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="read-content">
+                                                                                        <div class="media pt-3 d-sm-flex d-block justify-content-between">
+                                                                                            <div class="clearfix mb-3 d-flex">
+                                                                                                <img class="me-3 rounded" width="70" height="70" alt="image" src="images/avatar/1.jpg">
+                                                                                                <div class="media-body me-2">
+                                                                                                    <h5 class="text-primary mb-0 mt-1">Sender User name</h5>
+                                                                                                    <p class="mb-0">20 May 2023</p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="clearfix mb-3">
+                                                                                                <a href="javascript:void()" class="btn btn-primary px-3 my-1 light me-2"><i class="fa fa-reply"></i> </a>
+                                                                                                <a href="javascript:void()" class="btn btn-primary px-3 my-1 light me-2"><i class="fas fa-arrow-right"></i> </a>
+                                                                                                <a href="javascript:void()" class="btn btn-primary px-3 my-1 light me-2"><i class="fa fa-trash"></i></a>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <hr>
+                                                                                        <div class="media mb-2 mt-3">
+                                                                                            <div class="media-body"><span class="pull-end">07:23 AM</span>
+                                                                                                <h5 class="my-1 text-primary">Subject</h5>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="read-content-body">
+                                                                                            <h5 class="mb-4">Hi, User name</h5>
+                                                                                            <p class="mb-2"> Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. </p>
+                                                                                            <p class="mb-2">Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. 
+                                                                                            </p>
+                                                                                            <p class="mb-2">Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. 
+                                                                                                Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. 
+                                                                                                Sample message. Sample message. Sample message. Sample message. Sample message. Sample message. 
+                                                                                            </p>
+                                                                                            <h5 class="pt-3">Kind Regards</h5>
+                                                                                            <p>Sender user name, usertype</p>
+                                                                                            <hr>
+                                                                                            <a href="#composeModalToggle" role="button" data-bs-toggle="modal"  class="btn btn-primary btn-block">Reply</a>
+                                                                                        </div>
+
+                                                                                        <hr>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                      </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- End of compose modal -->
+
+												<div class="message">
+													<div>
+														<div class="d-flex message-single">
+															<div class="ps-1 align-self-center">
+																<div class="form-check custom-checkbox">
+																	<input type="checkbox" class="form-check-input" id="checkbox2">
+																	<label class="form-check-label" for="checkbox2"></label>
+																</div>
+															</div>
+															<div class="ms-2">
+																<button class="border-0 bg-transparent align-middle p-0"><i
+																		class="fa fa-star" aria-hidden="true"></i></button>
+															</div>
+														</div>
+														<a href="#viewModalToggle" role="button" data-bs-toggle="modal" class="col-mail col-mail-2">
+															<div class="subject">Subject of message</div>
+															<div class="date">11:49 am</div>
+														</a>
+													</div>
+												</div>
+
+												<div class="message">
+													<div>
+														<div class="d-flex message-single">
+															<div class="ps-1 align-self-center">
+																<div class="form-check custom-checkbox">
+																	<input type="checkbox" class="form-check-input" id="checkbox2">
+																	<label class="form-check-label" for="checkbox2"></label>
+																</div>
+															</div>
+															<div class="ms-2">
+																<button class="border-0 bg-transparent align-middle p-0"><i
+																		class="fa fa-star" aria-hidden="true"></i></button>
+															</div>
+														</div>
+														<a href="#viewModalToggle" role="button" data-bs-toggle="modal" class="col-mail col-mail-2">
+															<div class="subject">Subject of message</div>
+															<div class="date">11:49 am</div>
+														</a>
+													</div>
+												</div>
+
+												<div class="message">
+													<div>
+														<div class="d-flex message-single">
+															<div class="ps-1 align-self-center">
+																<div class="form-check custom-checkbox">
+																	<input type="checkbox" class="form-check-input" id="checkbox2">
+																	<label class="form-check-label" for="checkbox2"></label>
+																</div>
+															</div>
+															<div class="ms-2">
+																<button class="border-0 bg-transparent align-middle p-0"><i
+																		class="fa fa-star" aria-hidden="true"></i></button>
+															</div>
+														</div>
+														<a href="#viewModalToggle" role="button" data-bs-toggle="modal" class="col-mail col-mail-2">
+															<div class="subject">Subject of message</div>
+															<div class="date">11:49 am</div>
+														</a>
+													</div>
+												</div>
+												
+											</div>
+											<!-- panel -->
+											<div class="row mt-4">
+												<div class="col-12 ps-3">
+													<nav>
+														<ul class="pagination pagination-gutter pagination-primary pagination-sm no-bg">
+															<li class="page-item page-indicator"><a class="page-link" href="javascript:void()"><i class="la la-angle-left"></i></a></li>
+															<li class="page-item "><a class="page-link" href="javascript:void()">1</a></li>
+															<li class="page-item active"><a class="page-link" href="javascript:void()">2</a></li>
+															<li class="page-item"><a class="page-link" href="javascript:void()">3</a></li>
+															<li class="page-item"><a class="page-link" href="javascript:void()">4</a></li>
+															<li class="page-item page-indicator"><a class="page-link" href="javascript:void()"><i class="la la-angle-right"></i></a></li>
+														</ul>
+													</nav>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright © Designed &amp; Developed by Mike 2023</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+		<!--**********************************
+           Support ticket button start
+        ***********************************-->
+
+        <!--**********************************
+           Support ticket button end
+        ***********************************-->
+
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    {% include 'workflow-scripts.html' %}
+	{% block workflow-scripts-section %}
+	{% endblock %}
+	
+	
+	
+</body>
+</html>

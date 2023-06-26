@@ -1,0 +1,304 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- PAGE TITLE HERE -->
+    <title>Journalist Articles Page</title>
+
+	{% include 'workflow-styles.html' %}
+	{% block workflow-styles-section %}
+	{% endblock %}
+
+</head>
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="sk-three-bounce">
+            <div class="sk-child sk-bounce1"></div>
+            <div class="sk-child sk-bounce2"></div>
+            <div class="sk-child sk-bounce3"></div>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+		{% include 'journalist/header-section.html' %}
+		{% block nav-header-section %}
+		{% endblock %}
+		
+		<!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            <!-- row -->
+			<div class="container-fluid">
+				<div class="page-titles">
+					<ol class="breadcrumb">
+						<li class="breadcrumb-item"><a href="javascript:void(0)">Current Articles</a></li>
+					</ol>
+				</div>
+
+				<div class="row">
+					<div class="col-xl-12">
+						<div id="accordion-one" class="accordion doctor-list">
+							<div class="accordion__item">
+								<div class="accordion__header collapsed rounded-lg" id="headingThree" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-controls="collapseThree"  role="button"  aria-expanded="true">
+									<span class="accordion__header-alphabet">New Task</span>
+									<span class="accordion__header-line flex-grow-1"></span>
+									<span class="accordion__header--text">1 Project</span>
+									<span class="accordion__header--indicator style_two"></span>
+								</div>
+								<div id="collapseThree" class="collapse  show" aria-labelledby="headingThree" data-bs-parent="#accordion-one">
+									<div class="accordion-body-text">
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="card">
+													<div class="card-header">
+														<h4 class="card-title">Recent Assigned Tasks</h4>
+													</div>
+													<div class="card-body">
+														<div class="table-responsive">
+															<table class="table table-responsive-md">
+																<thead>
+																	<tr>
+																		<th style="width:80px;"><strong>#</strong></th>
+																		<th><strong>Title given</strong></th>
+																		<th><strong>Instruction Text</strong></th>
+																		<th><strong>Action</strong></th>
+																		<th></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td><strong>01</strong></td>
+																		<td>Title 1</td>
+																		<td>
+																			<div class="accordion-item">
+																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapse6One" aria-controls="collapse6One" aria-expanded="false" role="button">
+																					<span class="accordion-header-icon"></span>
+																				  <span class="accordion-header-text">Reasons and Instructions</span>
+																				  <span class="accordion-header-indicator"></span>
+																				</div>
+																				<div id="collapse6One" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
+																				  <div class="accordion-body-text">
+																						 List of Reasons and explanations
+																				  </div>
+																				</div>
+																			</div>	
+																		</td>
+																		<td><a href="javascript:void(0);" class="btn btn-danger mb-4">SET UP</a></td>
+																	</tr>
+																	
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>										
+									</div>
+								</div>
+							</div>
+							<div class="accordion__item">
+								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo">
+									<span class="accordion__header-alphabet">Ongoing Article Tasks</span>
+									<span class="accordion__header-line flex-grow-1"></span>
+									<span class="accordion__header--text">2 Projects</span>
+									<span class="accordion__header--indicator style_two"></span>
+								</div>
+								<div id="default_collapseTwo" class="collapse accordion__body" data-bs-parent="#accordion-one">
+									<div class="accordion-body-text">
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="card">
+													<div class="card-header">
+														<h4 class="card-title">Recent Assigned Tasks</h4>
+													</div>
+													<div class="card-body">
+														<div class="table-responsive">
+															<table class="table table-responsive-md">
+																<thead>
+																	<tr>
+																		<th style="width:80px;"><strong>#</strong></th>
+																		<th><strong>Title given</strong></th>
+																		<th><strong>Team</strong></th>
+																		<th><strong>Progress</strong></th>
+																		<th><strong>Action</strong></th>
+																		<th></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td><strong>01</strong></td>
+																		<td>Title 1</td>
+																		<td>
+																			<div class="accordion-item">
+																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapseTeam" aria-controls="collapseTeam" aria-expanded="false" role="button">
+																					<span class="accordion-header-icon"></span>
+																				  <span class="accordion-header-text">Team List</span>
+																				  <span class="accordion-header-indicator"></span>
+																				</div>
+																				<div id="collapseTeam" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
+																				  <div class="accordion-body-text">
+																						 List of Team Members
+																				  </div>
+																				</div>
+																			</div>	
+																		</td>
+																		<td>
+																			<div class="progress mb-5">
+																				<div class="progress-bar progress-animated bg-warning mx-0" style="width: 30%"></div>
+																			</div>
+																		</td>
+																		<td>
+																			<div class="dropdown">
+																				<button type="button" class="btn btn-warning light sharp" data-bs-toggle="dropdown">
+																					<svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+																				</button>
+																				<div class="dropdown-menu">
+																					<a class="dropdown-item" href="./current-article.html">Edit Instructions</a>
+																					<a class="dropdown-item" href="#">Edit Instructions</a>
+																					<a class="dropdown-item" href="#">Delete Task</a>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>										
+									</div>
+								</div>
+							</div>
+							<div class="accordion__item">
+								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseThree">
+									<span class="accordion__header-alphabet">Submitted awaiting publication</span>
+									<span class="accordion__header-line flex-grow-1"></span>
+									<span class="accordion__header--text">2 Projects</span>
+									<span class="accordion__header--indicator style_two"></span>
+								</div>
+								<div id="default_collapseThree" class="collapse accordion__body" data-bs-parent="#accordion-one">
+									<div class="accordion-body-text">
+										<div class="row">
+											<div class="col-lg-12">
+												<div class="card">
+													<div class="card-header">
+														<h4 class="card-title">Recent Assigned Tasks</h4>
+													</div>
+													<div class="card-body">
+														<div class="table-responsive">
+															<table class="table table-responsive-md">
+																<thead>
+																	<tr>
+																		<th style="width:80px;"><strong>#</strong></th>
+																		<th><strong>Title given</strong></th>
+																		<th><strong>Team</strong></th>
+																		<th><strong>Action</strong></th>
+																		<th></th>
+																	</tr>
+																</thead>
+																<tbody>
+																	<tr>
+																		<td><strong>01</strong></td>
+																		<td>Title 1</td>
+																		<td>
+																			<div class="accordion-item">
+																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapseTeam" aria-controls="collapseTeam" aria-expanded="false" role="button">
+																					<span class="accordion-header-icon"></span>
+																				  <span class="accordion-header-text">Team List</span>
+																				  <span class="accordion-header-indicator"></span>
+																				</div>
+																				<div id="collapseTeam" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
+																				  <div class="accordion-body-text">
+																						 List of Team Members
+																				  </div>
+																				</div>
+																			</div>	
+																		</td>
+																		<td>
+																			<div class="dropdown">
+																				<button type="button" class="btn btn-warning light sharp" data-bs-toggle="dropdown">
+																					<svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+																				</button>
+																				<div class="dropdown-menu">
+																					<a class="dropdown-item" href="#">Preview</a>
+																					<a class="dropdown-item" href="./current-article.html">Reject for revision</a>
+																					<a class="dropdown-item" href="#">Reject and Discard</a>
+																					<a class="dropdown-item" href="#">Approve for publication</a>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>
+																	
+																</tbody>
+															</table>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>										
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>				
+			</div>
+			
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright © Designed &amp; Developed by Mike 2023</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+
+		<!--**********************************
+           Support ticket button start
+        ***********************************-->
+
+        <!--**********************************
+           Support ticket button end
+        ***********************************-->
+
+
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+	{% include 'workflow-scripts.html' %}
+	{% block workflow-scripts-section %}
+	{% endblock %}	
+</body>
+</html>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -121,6 +122,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+# media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -132,3 +137,11 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Authentication pages
+ACCOUNT_LOGIN_TEMPLATE = 'users/login.html'
+ACCOUNT_SIGNUP_TEMPLATE = 'users/register.html'
+ACCOUNT_LOGOUT_TEMPLATE = 'users/logout.html'
+
+LOGIN_REDIRECT_URL = 'test-page'
+LOGIN_URL='login'

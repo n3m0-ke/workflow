@@ -29,7 +29,7 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
                                     <h4 class="text-center mb-4">Register your account</h4>
-                                    <form action="" method="post">
+                                    <form action="" method="post" autocomplete="off">
                                     {% csrf_token %}
 
                                         {% if errors %}
@@ -41,27 +41,37 @@
                                         </div>    
                                             {% endfor %}
                                         {% endif %}
+
+                                        {% if messages %}
+                                            {% for message in messages %}
+                                        
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <strong>Success!</strong> {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>    
+                                            {% endfor %}
+                                        {% endif %}
                                         
                                         
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Username</strong></label>
-                                            <input type="text" name="username" class="form-control" placeholder="username" id="username">
+                                            <input type="text" name="username" autocomplete="off" class="form-control" placeholder="username" id="username">
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Email*</strong></label>
-                                            <input type="email" name="email" required class="form-control" placeholder="hello@example.com">
+                                            <input type="email" name="email" autocomplete="off" required class="form-control" placeholder="hello@example.com">
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Employee Card Number*</strong></label>
-                                            <input type="text" name="id_card_number" required class="form-control" placeholder="username">
+                                            <input type="text" name="id_card_number" autocomplete="off" required class="form-control" placeholder="employee ID card number">
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Password*</strong></label>
-                                            <input type="password" name="password1" required class="form-control" value="Password" minlength="8">
+                                            <input type="password" name="password1" autocomplete="new-password" required class="form-control" minlength="8">
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Confirm Password*</strong></label>
-                                            <input type="password" name="password2" required class="form-control" value="Password" minlength="8">
+                                            <input type="password" name="password2" autocomplete="new-password" required class="form-control" minlength="8">
                                         </div>
                                         <div class="text-center mt-4">
                                             <button type="submit" class="btn btn-primary btn-block">Register Account</button>
@@ -98,7 +108,7 @@
             return false;
         },
         change: function() {
-            this.value = this.value.replace(/\s/g, "");
+            this.value = this.value.replace(/\s/g, "-");
         }
     });
     </script>

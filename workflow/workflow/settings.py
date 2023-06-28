@@ -138,10 +138,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Authentication pages
+# Authentication pages and settings
 ACCOUNT_LOGIN_TEMPLATE = 'users/login.html'
 ACCOUNT_SIGNUP_TEMPLATE = 'users/register.html'
 ACCOUNT_LOGOUT_TEMPLATE = 'users/logout.html'
 
-LOGIN_REDIRECT_URL = 'test-page'
+LOGIN_REDIRECT_URL = 'login-redirect'
 LOGIN_URL='login'

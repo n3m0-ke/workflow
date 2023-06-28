@@ -1,9 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from .models import Employee, Profile
+from django.contrib.auth.views import LoginView
+from .models import Employee, Profile, CapacityChoices
 from django.utils.text import slugify
 
 # Create your views here.
+
+class CustomLoginView(LoginView):
+    def get_success_url(self):
+        user = self.request.user
+        capacity = user.profile.capacity
+
+        print(capacity)
+        print(user.profile.id_card_number)
+
+        if capacity == CapacityChoices.WRITER:
+            return redirect('journalist-home')
+        elif capacity == CapacityChoices.PHOTOJOURNALIST:
+            return redirect('journalist-home')
+        elif capacity == CapacityChoices.EDITOR:
+            return redirect('editor-home')
+        elif capacity == CapacityChoices.DIRECTOR:
+            return redirect('director-home')
+        else:
+            return super().get_success_url()  # Fallback to the default success URL
 
 def generate_unique_username(first_name, other_names):
     # Combine first_name and other_names
@@ -27,15 +47,24 @@ def registration_view(request):
     context={}
     errors = []
     messages = []
+    context['username'] = ''
     if(request.method == 'POST'):
+        
         username = request.POST.get('username')
         email = request.POST.get('email')
         id_card_number = request.POST.get('id_card_number')
         password = request.POST.get('password1')
         confirm_passord = request.POST.get('password2')
 
+        # Check if user exists
+        user = User.objects.filter(email=email).first()
+        if (user and Profile.objects.filter(user=user, id_card_number=id_card_number)):
+            errors.append("Account exists. Go to Login page to login")
+            context['errors'] = errors
+            return render(request, "users/register.html", context)
+
         if (not(password==confirm_passord)):
-            errors.append("Make sure the passords match")
+            errors.append("Make sure the passwords match")
             context['errors'] = errors
             return render(request, "users/register.html", context)
         
@@ -49,31 +78,38 @@ def registration_view(request):
             # Handle the error or redirect to an appropriate page
             errors.append("Failed to register. Unknown credentials")
             context['errors'] = errors
+            print("Employee Does not exist")
             return render(request, "users/register.html", context)
         
-        # create username
-        if not username:
-            username = generate_unique_username(employee.first_name, employee.other_names)
-        else:
-            count = User.objects.filter(username__startswith=username).count()
-            if count > 0:
-                username = f"{username}{count + 1}"
+        if (employee):
+            # create username
+            if not username:
+                username = generate_unique_username(employee.first_name, employee.other_names)
             else:
-                username = username
+                count = User.objects.filter(username__startswith=username).count()
+                if count > 0:
+                    username = f"{username}{count + 1}"
+                else:
+                    username = username
 
-        # create user
-        user = User(username=username, email=email)
-        user.set_password(password)
-        user.save()
+            # create user
+            user = User(username=username, email=email, firs_name=employee.first_name, last_name=employee.other_names)
+            user.set_password(password)
+            user.save()
 
-        # create user profile
-        user_profile = Profile(user=user, email=email, id_card_number=id_card_number, capacity=employee.capacity)
-        user_profile.save()
+            # create user profile
+            user_profile = Profile(user=user, email=email, id_card_number=id_card_number, capacity=employee.capacity)
+            user_profile.save()
 
-        messages.append("Account Created Successfully. Now you can login.")
-        context['messages'] = messages
+            messages.append(f'Account Created Successfully. Now you can login with username: {username}.')
+            context['username'] = username
+            context['messages'] = messages
 
-        return render(request, "users/login.html", context)
+            return render(request, "users/login.html", context)
+        else:
+            errors.append("Employee Record doesn't exists. Recheck ID card number and Email details.")
+            context['errors'] = errors
+            return render(request, "users/register.html", context)    
 
 
     

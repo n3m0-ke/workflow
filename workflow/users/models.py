@@ -22,11 +22,28 @@ class Employee(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(default='default.jpg', upload_to='profile_pictures')
+    profile_picture = models.ImageField(default='default.png', upload_to='profile_pictures')
     email = models.EmailField()
     id_card_number = models.CharField(max_length=10)
     capacity = models.CharField(max_length=20, choices=CapacityChoices.choices)
 
     def __str__(self):
         return f'{self.user.username} Profile'
+
+class Journalist(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    type = models.CharField(max_length=20, choices=CapacityChoices.choices)
+
+    def __str__(self):
+        return f'{self.user.first_name} Journalist Record'
+
+class Editor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.first_name} Editor Record'
+
+class Director(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.user.first_name} Director Record'
 

@@ -5,6 +5,9 @@ urlpatterns = [
     #test page
     path('testpage/', views.test_page, name='test-page'),
 
+    # login redirect
+    path('login-redirect/', views.login_redirect, name='login-redirect'),
+    
     # journalist urls
     path('journalist/', views.journalist_dashboard_view, name='journalist-home'),
     path('journalist/dashboard', views.journalist_dashboard_view, name='journalist-dash'),

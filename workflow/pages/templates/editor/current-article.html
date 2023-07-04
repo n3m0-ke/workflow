@@ -52,20 +52,92 @@
 					</ol>
 				</div>
 				<div class="d-flex flex-wrap d-review justify-content-between">
-					<!-- <div class="d-flex align-items-center flex-wrap">
-						<a href="javascript:void(0);" class="btn btn-danger mb-4">REVERT CHANGES</a>
-						<a href="javascript:void(0);" class="btn btn-success ms-3 mb-4">SUBMIT</a>
-						<div class="dropdown ms-3 d-inline-block mb-4">
-							<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-								<i class="flaticon-381-controls-3 me-2"></i> Check instructions
+					<div class="d-flex align-items-center flex-wrap">
+						{% if task.status == 'completed' and task.submission_status == 'in_progress'%}
+						<a href="javascript:void(0);" class="btn btn-danger mb-4">REJECT</a>
+						<a href="#approveArticleModalToggle" data-bs-toggle="modal" class="btn btn-success mb-4 ms-3">APPROVE</a>
+						{% endif %}
+
+						<div class="modal fade" id="approveArticleModalToggle" tabindex="-1" aria-labelledby="approveArticleModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+								<div class="col-lg-12">
+								</div>
+									<div class="modal-header">
+										<h5 class="modal-title" id="composeModalToggleLabel">Approve {{task.title}} Task Article Text And Images</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+									</div>
+									<div class="modal-body">
+										<div class="col-lg-12">
+											<form method="post">
+											{% csrf_token %}
+												<div class="mb-3 row">
+
+													{% if proposed_title_subtexts %}
+													<label class="col-sm-3 col-form-label" for="journalist">Proposed Titles and Subtexts: </label>
+													<div class="col-sm-9">
+														<select name="proposed-title-subtext" class="form-control">
+														{% for proposal in proposed_title_subtexts %}
+														<option value="{{proposal.id}}">{{proposal.title}}: <br>{{proposal.subtext}}</option>
+														{% endfor %}
+														</select>
+													</div>
+
+													<hr>
+													<h5>Create own Title and/or Subtext <h5>
+													<div class="mb-3 row">
+														<label class="col-sm-3 col-form-label" for="instructions">Title</label>
+														<div class="col-sm-9">
+															<input class="form-control" type="text" name="article-title" value="" maxlength="30" placeholder="Article Title">
+														</div>
+													</div>
+													<div class="mb-3 row">
+														<label class="col-sm-3 col-form-label" for="instructions">Sub Text</label>
+														<div class="col-sm-9">
+															<input class="form-control" type="text" name="article-subtext" value="" maxlength="70" placeholder="Article SubText">
+														</div>
+													</div>
+													{% else %}
+													<h5>Create own Title and/or Subtext <h5>
+													<div class="mb-3 row">
+														<label class="col-sm-3 col-form-label" for="instructions">Title</label>
+														<div class="col-sm-9">
+															<input class="form-control" type="text" required name="article-title" value="" maxlength="30" placeholder="Article Title">
+														</div>
+													</div>
+													<div class="mb-3 row">
+														<label class="col-sm-3 col-form-label" for="instructions">Sub Text</label>
+														<div class="col-sm-9">
+															<input class="form-control" type="text" required name="article-subtext" value="" maxlength="70" placeholder="Article SubText">
+														</div>
+													</div>
+													{% endif %}
+													
+												</div>
+												<button type="submit" class="btn btn-success" name="approve">APPROVE</button>
+											</form>
+										</div>											
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+									</div>
 							</div>
-							<div class="dropdown-menu dropdown-menu-left">
-								<a class="dropdown-item" href="javascript:void(0);">Instruction one</a>
-								<a class="dropdown-item" href="javascript:void(0);">Instruction two</a>
-								<a class="dropdown-item" href="javascript:void(0);">Instruction three</a>
 							</div>
 						</div>
-					</div> -->
+						
+						
+						
+						<div class="dropdown ms-3 d-inline-block mb-4">
+							<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+								<i class="flaticon-381-controls-3 me-2"></i> Check Journalist Instructions
+							</div>
+							<div class="dropdown-menu dropdown-menu-left">
+								{% for instruction in instructions %}
+								<a class="dropdown-item" href="javascript:void(0);">{{instruction.journalist.user.first_name}} {{instruction.journalist.user.first_name}} - {{instruction.instruction}}</a>								
+								{% endfor %}
+							</div>
+						</div>
+					</div>
                 </div>
 
 				<div class="row ">
@@ -85,6 +157,13 @@
 							
 						</div>
 					</div>
+					{% if submission_message %}
+						
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						<strong>Success!</strong> {{ submission_message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div> 
+					{% endif %}
 					<div class="col-xl-3">
 						<div class="mail-list rounded overflow-hidden mt-4">
 							<div class="intro-title d-flex justify-content-between my-0">
@@ -105,7 +184,7 @@
 							{% endfor %}
 						</div>
 						{% if task.journalists.all.count < 3 and task_journalists %}
-						<a href="#addJournalistModalToggle" data-bs-toggle="modal" class="btn btn-success ms-3 mb-4 mt-4">ADD Journalist</a>
+						{% comment %} <a href="#addJournalistModalToggle" data-bs-toggle="modal" class="btn btn-success ms-3 mb-4 mt-4">ADD Journalist</a> {% endcomment %}
 
 						<div class="modal fade" id="addJournalistModalToggle" tabindex="-1" aria-labelledby="addJournalistModalLabel" aria-hidden="true">
 							<div class="modal-dialog modal-lg">
@@ -506,8 +585,49 @@
 								<h4 class="card-title">Check Article</h4>
 							</div>
 							<div class="card-body">
-								<a href="javascript:void(0);" class="btn btn-danger mb-4 mt-4">Preview Article Text</a>
+								{% if article %}
+								<a href="#previewArticleModalToggle" data-bs-toggle="modal" class="btn btn-danger mb-4 mt-4">Preview Article Text</a>
+
+								<div class="modal fade" id="previewArticleModalToggle" tabindex="-1" aria-labelledby="previewArticleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="composeModalToggleLabel">Preview {{task.title}} Task Article Texts</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+											</div>
+											<div class="modal-body">
+												<div class="col-lg-12 p-2">
+
+													{% for section in article.article_sections.all %}
+													<h4 class="mb-3"> {{section.section_title}} </h4>
+													<p class="mb-2"> {{section.section_text}} </p>
+													<hr>
+													
+													{% endfor %}
+													
+												</div>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+											</div>
+									</div>
+									</div>
+								</div>
+
+
+
+
+								{% else %}
+								<h4>No articles Created at the moment</h4>
+								{% endif %}
+
+								{% if photo_gallery %}
 								<a href="javascript:void(0);" class="btn btn-success mb-4 mt-4">Preview Images</a>
+								{% else %}
+								<h4>No images added to this Task at the moment</h4>
+								{% endif %}
+								
+								
 							</div>
 						</div>
 												

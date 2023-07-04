@@ -79,14 +79,15 @@
 							{% endfor %}
 						{% endif %}
 
-						{% if section_sub_message %}
-							{% for message in section_sub_message %}
+						{% if section_sub_messages %}
+							{% for message in section_sub_messages %}
 						<div class="alert alert-success alert-dismissible fade show" role="alert">
 							<strong>Success!</strong> {{ message }}
 							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 						</div> 
 							{% endfor %}
 						{% endif %}
+
 						<form method="post" id="section-form">
 							{% csrf_token %}
 							<h4>Title Details</h4>
@@ -194,6 +195,8 @@
 										<button type="button" class="btn btn-primary"><i class="fa fa-location-arrow"></i></button>
 									</div>
 								</div>
+								
+							{{section.submission_status}}
 							</div>
 						</div>
 					</div>
@@ -233,15 +236,7 @@
     <!--**********************************
         Scripts
     ***********************************-->
-	{% include 'workflow-scripts.html' %}
-	{% block workflow-scripts-section %}
-	{% endblock %}
-	
-	<script src="{% static 'workflow-static/vendor/lightgallery/js/lightgallery-all.min.js' %}"></script>
-	<!-- All init script -->
-    <script src="{% static 'workflow-static/js/plugins-init/toastr-init.js' %}"></script>
-
-	{% if section.submision_status == 'submitted'  %}
+	{% if section.submission_status == 'submitted'  %}
 	<script >
 	// Get the form element by its ID
 	console.log("in script")
@@ -258,6 +253,17 @@
 	</script>
 	{% else %}
 	{% endif %}
+
+
+	{% include 'workflow-scripts.html' %}
+	{% block workflow-scripts-section %}
+	{% endblock %}
+	
+	<script src="{% static 'workflow-static/vendor/lightgallery/js/lightgallery-all.min.js' %}"></script>
+	<!-- All init script -->
+    <script src="{% static 'workflow-static/js/plugins-init/toastr-init.js' %}"></script>
+
+	
 	
 
 

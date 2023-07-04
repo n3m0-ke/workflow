@@ -13,6 +13,7 @@ class TaskStatusChoices(models.TextChoices):
     IN_PROGRESS = 'in_progress', 'In Progress'
     COMPLETED = 'completed', 'Completed'
     CANCELLED = 'cancelled', 'Cancelled'
+    APPROVED = 'approved', 'Approved'
 
 class SubmissionStatusChoices(models.TextChoices):
     IN_PROGRESS = 'in_progress', 'In Progress'
@@ -47,7 +48,7 @@ class Task(models.Model):
     journalists = models.ManyToManyField(Journalist, related_name='tasks')
     status = models.CharField(max_length=20, default=TaskStatusChoices.PENDING, choices=TaskStatusChoices.choices)
     progress = models.IntegerField(default=10)
-    submision_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
+    submission_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
 
     def __str__(self):
         return f'{self.title} Task'
@@ -58,7 +59,6 @@ class Task(models.Model):
         remainig_days = remaining_time.days
 
         return remainig_days
-
 
 
 class Article(models.Model):
@@ -81,7 +81,7 @@ class ArticleSection(models.Model):
     section_title = models.CharField(max_length=20, null=True)
     section_text = models.TextField(null=True)
     journalist = models.OneToOneField(Journalist, on_delete=models.CASCADE, related_name='journalist')
-    submision_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
+    submission_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
 
 
 class PhotoGallery(models.Model):
@@ -89,7 +89,7 @@ class PhotoGallery(models.Model):
     title = models.CharField(max_length=20, null=True)
     subtext = models.CharField(max_length=30, null=True)
     journalist = models.OneToOneField(Journalist, on_delete=models.CASCADE, related_name='photo_journalist', null=True)
-    submision_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
+    submission_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
 
     def __str__(self):
         return f'{self.task.title} Task Photo Gallery'

@@ -124,7 +124,7 @@ def journalist_current_article_view(request, task_id):
                     proposed_title_subtext = ProposedTitleSubText.objects.get(id=proposed_title_subtext_id)
 
                 if(not(proposed_title_subtext)):
-                    proposed_title_subtext = ProposedTitleSubText(journalist=journalist_user)
+                    proposed_title_subtext = ProposedTitleSubText(journalist=journalist_user, article=article)
                 
                 if(proposed_title_subtext.title != proposed_title):
                     proposed_title_subtext.title = proposed_title
@@ -166,7 +166,7 @@ def journalist_current_article_view(request, task_id):
 
             if action == 'submit':
                 # get submission status
-                section.submision_status = SubmissionStatusChoices.SUBMITTED 
+                section.submission_status = SubmissionStatusChoices.SUBMITTED 
                 section.save()               
                 
                 # update progress
@@ -180,9 +180,9 @@ def journalist_current_article_view(request, task_id):
                     total = number_of_sections
                 
                 #check number of submitted
-                number_of_submitted_sections = article.article_sections.filter(submision_status=SubmissionStatusChoices.SUBMITTED).count()
+                number_of_submitted_sections = article.article_sections.filter(submission_status=SubmissionStatusChoices.SUBMITTED).count()
 
-                if(photo_gallery and photo_gallery.submision_status=='submitted'):
+                if(photo_gallery and photo_gallery.submission_status=='submitted'):
                     total_submitted = number_of_submitted_sections + 1
                 
                 else:
@@ -192,6 +192,11 @@ def journalist_current_article_view(request, task_id):
                     progress = int(total_submitted/total)*100
                     task.progress = progress
                     task.save()
+                
+                if(task.progress==100):
+                    task.status = TaskStatusChoices.COMPLETED
+                    task.end_date_time = timezone.now()
+                    task.save()
 
                 task_notification_message = f'{user.first_name} {user.last_name} submitted their article section title and body-text'
                 current_task_status = task.status
@@ -200,8 +205,8 @@ def journalist_current_article_view(request, task_id):
 
         context['article'] = article
         context['section'] = section
+        print(section.submission_status)
         context['proposed_title_subtext'] = proposed_title_subtext
-        print(proposed_title_subtext)
         return render(request, "journalist/current-article.html", context)
     
     elif capacity == CapacityChoices.PHOTOJOURNALIST:
@@ -286,7 +291,6 @@ def editor_article_list_view(request):
         journalist_ids = []
         instructions_list = []
         for key,value in request.POST.items():
-            print(f'{key}: {value}')
             if "journalist" in key:
                 journalist_ids.append(value)
             if "instructions" in key:
@@ -294,16 +298,14 @@ def editor_article_list_view(request):
         
         task = Task.objects.get(id=task_id)
 
-        task.status = TaskStatusChoices.IN_PROGRESS
-        task.save()
+        for journalist_id in journalist_ids:
+            index = journalist_ids.index(journalist_id)
 
-        for i in range(len(journalist_ids)-1):
-            # add Journalist to task, notify journalist, add task notification to task
-            journalist = Journalist.objects.get(id=journalist_ids[i])
+            journalist = Journalist.objects.get(id=journalist_id)
             journalist_user = journalist.user
             task.journalists.add(journalist)
 
-            journalist_instructions = instructions_list[i]
+            journalist_instructions = instructions_list[index]
             instruction_object = Instruction(task=task, instruction=journalist_instructions, journalist=journalist)
             instruction_object.save()
 
@@ -317,9 +319,9 @@ def editor_article_list_view(request):
             task_notification = TaskNotification(creation_time=timezone.now() ,task=task, message=task_notification_message, current_status=current_task_status)
             task_notification.save()
         
-        
+        task.status = TaskStatusChoices.IN_PROGRESS
+        task.save()
         new_task_messages+='Journalist(s) successfully assigned to task. \n'
-
         context['new_task_messages'] = new_task_messages
 
     task_journalists = Journalist.objects.annotate(
@@ -339,9 +341,11 @@ def editor_article_list_view(request):
 
     new_tasks = Task.objects.filter(editor=editor_user, status=TaskStatusChoices.ASSIGNED)
     progressing_tasks = Task.objects.filter(editor=editor_user, status=TaskStatusChoices.IN_PROGRESS)
+    complete_tasks = Task.objects.filter(editor=editor_user, status=TaskStatusChoices.COMPLETED)
     context['task_journalists'] = task_journalists
     context['new_tasks'] = new_tasks
     context['progressing_tasks'] = progressing_tasks
+    context['complete_tasks'] = complete_tasks
     context['page_title'] = 'Article List'
     return render(request, "editor/article-list.html", context)
 
@@ -354,6 +358,50 @@ def editor_current_article_view(request, task_id):
     
     editor_user = Editor.objects.get(user=user)
     context={}
+    task = Task.objects.get(id=task_id)
+
+    # check for articles, photogallery, article sections and images
+    if(hasattr(task, 'article')):
+        article = task.article
+        context['article'] = article
+
+        proposed_title_subtexts = ProposedTitleSubText.objects.filter(article=article)
+        context['proposed_title_subtexts'] = proposed_title_subtexts
+    
+    if(hasattr(task, 'photo_gallery')):
+        photo_gallery = task.photo_gallery
+        context['photo_gallery'] = photo_gallery
+
+    print(request.method)
+
+    if(request.method=='POST' and ('approve' in request.POST)):
+        proposed_title_subtext_id = request.POST.get('proposed-title-subtext')
+        editor_article_title = request.POST.get('article-title')
+        editor_article_subtext = request.POST.get('article-subtext')
+
+        proposed_title_subtext = ProposedTitleSubText.objects.get(id=proposed_title_subtext_id)
+        proposed_title = proposed_title_subtext.title
+        proposed_subtext = proposed_title_subtext.subtext
+
+        if(not(editor_article_title)):
+            article_title = proposed_title
+        else:
+            article_title = editor_article_title
+        
+        if(not(editor_article_subtext)):
+            article_subtext = proposed_subtext
+        else:
+            article_subtext = editor_article_subtext
+        
+        article.title = article_title
+        article.subtext = article_subtext
+        article.save()
+        
+        task.submission_status = SubmissionStatusChoices.SUBMITTED
+        task.save()
+        submission_message = "Task approved and submitted for publication"
+        
+        context['submission_message'] = submission_message
 
     task_journalists = Journalist.objects.annotate(
         num_incomplete_tasks=Count(
@@ -368,13 +416,18 @@ def editor_current_article_view(request, task_id):
             Q(num_incomplete_tasks__lt=2) | Q(has_no_tasks=True)
         )
 
-    task = Task.objects.get(id=task_id)
+    
     task_journalists = task_journalists.exclude(tasks=task)
     task_notifications = TaskNotification.objects.filter(task=task)
+    instructions = Instruction.objects.filter(task=task)
+
     
+    
+        
     context['task']=task
     context['task_journalists'] = task_journalists
     context['task_notifications'] = task_notifications
+    context['instructions'] = instructions
     context['page_title'] = 'Article View'
 
     # If statemtn for usertype to go to current-article-2
@@ -531,7 +584,7 @@ def director_article_list_view(request):
             user_notification = UserNotification(user=editor_user, message=user_notification_message)
             user_notification.save()
 
-            task_notification_message = f'Task Created & Assigned to Editor {editor_user.firstname} {editor_user.lastname}'
+            task_notification_message = f'Task Created & Assigned to Editor {editor_user.first_name} {editor_user.last_name}'
             current_task_status = new_task.status
             task_notification = TaskNotification(creation_time=timezone.now() ,task=new_task, message=task_notification_message, current_status=current_task_status)
             task_notification.save()
@@ -562,6 +615,15 @@ def director_article_list_view(request):
             project.save()
             project_messages.append("Project Status updated successfully")
             context['project_messages'] = project_messages
+    
+    
+    if (request.method=='POST' and ('task-id' in request.POST)):
+        task = Task.objects.get(id=request.POST.get('task-id'))
+        task.status=TaskStatusChoices.APPROVED
+        task.save()
+        approval_messages = []
+        approval_messages.append('Task approved successfully')
+        context['approval_messages'] = approval_messages
 
     projects = Project.objects.filter(director=director_user)
     projects_count = projects.count()
@@ -583,6 +645,11 @@ def director_article_list_view(request):
     context['task_editors'] = task_editors
 
     tasks = Task.objects.filter(project__in=projects)
+
+    pending_tasks = tasks.exclude(submission_status=SubmissionStatusChoices.SUBMITTED)
+    submitted_tasks = tasks.filter(submission_status=SubmissionStatusChoices.SUBMITTED)
+
+
     tasks_count = tasks.count()
 
     context['page_title'] = 'Projects/Tasks List'
@@ -592,6 +659,9 @@ def director_article_list_view(request):
 
     context['tasks'] = tasks
     context['tasks_count'] = tasks_count
+
+    context['pending_tasks'] = pending_tasks
+    context['submitted_tasks'] = submitted_tasks
     
     return render(request, "director/article-list.html", context)
 

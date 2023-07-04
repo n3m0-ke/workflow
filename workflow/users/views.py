@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
-from .models import Employee, Profile, CapacityChoices
+from .models import Employee, Profile, CapacityChoices, Journalist, Editor, Director
 from django.utils.text import slugify
 
 # Create your views here.
@@ -46,7 +47,7 @@ def generate_unique_username(first_name, other_names):
 def registration_view(request):
     context={}
     errors = []
-    messages = []
+    view_messages = []
     context['username'] = ''
     if(request.method == 'POST'):
         
@@ -57,6 +58,8 @@ def registration_view(request):
         confirm_passord = request.POST.get('password2')
 
         # Check if user exists
+        # create profile if it does not exist
+        # add to appropriate employee table if it does not exist
         user = User.objects.filter(email=email).first()
         if (user and Profile.objects.filter(user=user, id_card_number=id_card_number)):
             errors.append("Account exists. Go to Login page to login")
@@ -93,7 +96,7 @@ def registration_view(request):
                     username = username
 
             # create user
-            user = User(username=username, email=email, firs_name=employee.first_name, last_name=employee.other_names)
+            user = User(username=username, email=email, first_name=employee.first_name, last_name=employee.other_names)
             user.set_password(password)
             user.save()
 
@@ -101,11 +104,29 @@ def registration_view(request):
             user_profile = Profile(user=user, email=email, id_card_number=id_card_number, capacity=employee.capacity)
             user_profile.save()
 
-            messages.append(f'Account Created Successfully. Now you can login with username: {username}.')
-            context['username'] = username
-            context['messages'] = messages
+            capacity = employee.capacity
 
-            return render(request, "users/login.html", context)
+            if capacity == CapacityChoices.WRITER:
+                # insert in journalist table
+                journalist_user = Journalist(user=user, type=capacity)
+                journalist_user.save()
+            elif capacity == CapacityChoices.PHOTOJOURNALIST:
+                # insert in journalist table
+                journalist_user = Journalist(user=user, type=capacity)
+                journalist_user.save()
+            elif capacity == CapacityChoices.EDITOR:
+                # insert in journalist table
+                editor_user = Editor(user=user)
+                editor_user.save()
+            elif capacity == CapacityChoices.DIRECTOR:
+                # insert in journalist table
+                director_user = Director(user=user)
+                director_user.save()
+            
+            messages.success(request, f'{username}', extra_tags='username')
+            messages.success(request, f'Account Created Successfully. Now you can login with username: {username}.', extra_tags='alert_message')
+            return redirect('login')
+        
         else:
             errors.append("Employee Record doesn't exists. Recheck ID card number and Email details.")
             context['errors'] = errors

@@ -14,7 +14,7 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=20)
     other_names = models.CharField(max_length=30)
     email = models.EmailField()
-    id_card_number = models.CharField(max_length=10)
+    id_card_number = models.CharField(max_length=10, unique=True)
     capacity = models.CharField(max_length=20, choices=CapacityChoices.choices)
 
     def __str__(self):

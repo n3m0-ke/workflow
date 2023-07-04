@@ -1,4 +1,5 @@
 {% load static %}
+{% load tz %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,6 +14,8 @@
 	{% include 'workflow-styles.html' %}
 	{% block workflow-styles-section %}
 	{% endblock %}
+
+	<link href="{% static 'workflow-static/vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">
 
 </head>
 <body>
@@ -48,7 +51,7 @@
 			<div class="container-fluid">
 				<div class="page-titles">
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="javascript:void(0)">Current Articles</a></li>
+						<li class="breadcrumb-item"><a href="javascript:void(0)">Projects/Tasks</a></li>
 					</ol>
 				</div>
 
@@ -57,9 +60,9 @@
 						<div id="accordion-one" class="accordion doctor-list">
 							<div class="accordion__item">
 								<div class="accordion__header collapsed rounded-lg" id="headingThree" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-controls="collapseThree"  role="button"  aria-expanded="true">
-									<span class="accordion__header-alphabet">New Task</span>
+									<span class="accordion__header-alphabet">Projects</span>
 									<span class="accordion__header-line flex-grow-1"></span>
-									<span class="accordion__header--text">1 Project</span>
+									<span class="accordion__header--text">{{ projects_count }} Project(s)</span>
 									<span class="accordion__header--indicator style_two"></span>
 								</div>
 								<div id="collapseThree" class="collapse  show" aria-labelledby="headingThree" data-bs-parent="#accordion-one">
@@ -68,41 +71,176 @@
 											<div class="col-lg-12">
 												<div class="card">
 													<div class="card-header">
-														<h4 class="card-title">Recent Assigned Tasks</h4>
+														<div class="form-head d-flex mb-2 align-items-start flex-wrap justify-content-between">
+															<div class="me-auto d-md-block">
+																<h3 class="text-primary font-w600">Your Projects</h3>
+															</div>
+															
+															<div class="input-group ">
+																<a href="#addProjectModalToggle" data-bs-toggle="modal"  class="btn btn-danger" id="newProjectButton">ADD PROJECT</a>
+																<!-- Add Project modal -->
+
+																<div class="modal fade" id="addProjectModalToggle" tabindex="-1" aria-labelledby="addProjectModalToggleLabel" aria-hidden="true">
+																	<div class="modal-dialog modal-lg">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h5 class="modal-title" id="composeModalToggleLabel">New Project</h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																			</div>
+																			<div class="modal-body">
+																				<div class="col-lg-12">
+																					<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																						<div class="compose-content">
+																							<div class="basic-form">
+																								<form method="post">
+																									{% csrf_token %}
+																									{% if project_errors %}
+																										{% for error in project_errors %}
+																									<div class="alert alert-warning alert-dismissible fade show" role="alert">
+																										<strong>Error!</strong> {{ error }}
+																										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																									</div> 
+																										{% endfor %}
+																									{% endif %}
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Title</label>
+																										<div class="col-sm-9">
+																											<input type="text" required class="form-control" name="project-title" placeholder="Project Title">
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Description</label>
+																										<div class="col-sm-9">
+																											<textarea required class="form-control" rows="4" name="project-description" id="project-description"></textarea>
+																										</div>
+																									</div>
+																									<div class="mb-1 row">
+																										<div class="col-sm-10">
+																											<button type="submit" class="btn btn-primary">Submit Details</button>
+																											<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																										</div>
+																									</div>
+																								</form>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																			<div class="modal-footer">
+																				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																			</div>
+																	</div>
+																	</div>
+																</div>
+
+
+															</div>
+														</div>
+														
 													</div>
 													<div class="card-body">
+
+														{% if project_messages %}
+															{% for message in project_messages %}
+														<div class="alert alert-success alert-dismissible fade show" role="alert">
+															<strong>Success!</strong> {{ message }}
+															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+														</div>
+															{% endfor %}
+														{% endif %}
+
+														{% if project_table_errors %}
+															{% for error in project_table_errors %}
+														<div class="alert alert-success alert-dismissible fade show" role="alert">
+															<strong>Error!</strong> {{ error }}
+															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+														</div>
+															{% endfor %}
+														{% endif %}
 														<div class="table-responsive">
-															<table class="table table-responsive-md">
+															<table class="table table-responsive-md" id="projects-table">
 																<thead>
 																	<tr>
 																		<th style="width:80px;"><strong>#</strong></th>
-																		<th><strong>Title given</strong></th>
-																		<th><strong>Instruction Text</strong></th>
+																		<th><strong>Title</strong></th>
+																		<th><strong>Status</strong></th>																		
+																		<th><strong>Date Created</strong></th>
+																		<th><strong>No. of Tasks</strong></th>																		
+																		<th><strong>Other Details</strong></th>
 																		<th><strong>Action</strong></th>
-																		<th></th>
 																	</tr>
 																</thead>
 																<tbody>
+
+																	{% if projects %}
+																	{% for project in projects %}
 																	<tr>
-																		<td><strong>01</strong></td>
-																		<td>Title 1</td>
+																		<td><strong>{{project.id}}</strong></td>
+																		<td>{{project.title}}</td>
 																		<td>
-																			<div class="accordion-item">
-																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapse6One" aria-controls="collapse6One" aria-expanded="false" role="button">
-																					<span class="accordion-header-icon"></span>
-																				  <span class="accordion-header-text">Reasons and Instructions</span>
-																				  <span class="accordion-header-indicator"></span>
-																				</div>
-																				<div id="collapse6One" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
-																				  <div class="accordion-body-text">
-																						 List of Reasons and explanations
-																				  </div>
-																				</div>
-																			</div>	
+																			{% if project.status == 'active' %}
+																			<span class="badge badge-success">{{ project.status }}</span>
+																			{% endif %}
+																			{% if project.status == 'deactivated' %}
+																			<span class="badge badge-danger">{{ project.status }}</span>
+																			{% endif %}
 																		</td>
-																		<td><a href="javascript:void(0);" class="btn btn-danger mb-4">SET UP</a></td>
+																		<td>{{ project.date_of_creation }}</td>
+																		<td>{{ project.task_set.count }}</td>
+																		<td>
+																			<a href="#otherProjectDetails{{project.id}}" data-bs-toggle="modal"  class="btn" id="otherprojectdetails">Other Details</a>
+																			<div class="modal fade" id="otherProjectDetails{{project.id}}" tabindex="-1" aria-labelledby="otherProjectDetails{{project.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Other Details for {{project.title}} Project</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="basic-list-group">
+																								<ul class="list-group list-group-flush">
+																									<li class="list-group-item">
+																									Description - <br>
+																									{{ project.description }}</li>
+
+																									<li class="list-group-item">
+																									Tasks Breakdown <br>
+																																																		
+																									</li>
+																									
+																								</ul>	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light mb-1" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+
+																		</td>
+																		<td>
+																			{% if project.status == 'active' %}
+																			<form action="" method="post">
+																				{% csrf_token %}
+																				<input type="hidden" name="projectid" value="{{ project.id }}">
+																				<button type="submit" class="btn btn-danger" name="toggleStatusSub">Deactivate</button>
+																			</form>
+																			{% endif %}
+																			{% if project.status == 'deactivated' %}
+																			<form action="" method="post">
+																				{% csrf_token %}
+																				<input type="hidden" name="projectid" value="{{ project.id }}">
+																				<button type="submit" class="btn btn-success" name="toggleStatusSub">Activate</button>
+																			</form>
+																			{% endif %}<br>
+																			<button type="submit" class="btn btn-primary" name="toggleStatusSub">Edit Project</button>
+																		</td>
+																		
 																	</tr>
-																	
+																	{% endfor %}
+																	{% endif %}																	
 																</tbody>
 															</table>
 														</div>
@@ -114,10 +252,10 @@
 								</div>
 							</div>
 							<div class="accordion__item">
-								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo">
-									<span class="accordion__header-alphabet">Ongoing Article Tasks</span>
+								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo" id="taskCollapseAccordion">
+									<span class="accordion__header-alphabet">Tasks</span>
 									<span class="accordion__header-line flex-grow-1"></span>
-									<span class="accordion__header--text">2 Projects</span>
+									<span class="accordion__header--text">{{ tasks_count }} Task(s)</span>
 									<span class="accordion__header--indicator style_two"></span>
 								</div>
 								<div id="default_collapseTwo" class="collapse accordion__body" data-bs-parent="#accordion-one">
@@ -126,57 +264,211 @@
 											<div class="col-lg-12">
 												<div class="card">
 													<div class="card-header">
-														<h4 class="card-title">Recent Assigned Tasks</h4>
+														<div class="form-head d-flex mb-2 align-items-start flex-wrap justify-content-between">
+															<div class="me-auto d-md-block">
+																<h3 class="text-primary font-w600">Your Tasks</h3>
+															</div>
+															
+															<div class="input-group ">
+																<a href="#addTaskModalToggle" data-bs-toggle="modal"  class="btn btn-danger" id="newTaskButton">ADD TASK</a>
+																<!-- Add Task modal -->
+
+																<div class="modal fade" id="addTaskModalToggle" tabindex="-1" aria-labelledby="addTaskModalToggleLabel" aria-hidden="true">
+																	<div class="modal-dialog modal-lg">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h5 class="modal-title" id="composeModalToggleLabel">New Task</h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																			</div>
+																			<div class="modal-body">
+																				<div class="col-lg-12">
+																					<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																						<div class="compose-content">
+																							<div class="basic-form">
+																								<form method="post">
+																									{% csrf_token %}
+																									{% if task_errors %}
+																										{% for error in task_errors %}
+																									<div class="alert alert-warning alert-dismissible fade show" role="alert">
+																										<strong>Error!</strong> {{ error }}
+																										<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																									</div> 
+																										{% endfor %}
+																									{% endif %}
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Title</label>
+																										<div class="col-sm-9">
+																											<input type="text" required class="form-control" name="task-title" placeholder="Task Title">
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Description</label>
+																										<div class="col-sm-9">
+																											<textarea required class="form-control" rows="4" name="task-description" id="task-description"></textarea>
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Project</label>
+																										<div class="col-sm-9">
+																											<select class="form-control wide mb-3" name="task-project-id" tabindex="null">
+																												{% for project in projects %}
+																												<option value="{{project.id}}">{{project.title}}</option>
+																												{% endfor %}
+																												
+																											</select>
+																										</div>
+																									</div>																									
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Editor</label>
+																										<div class="col-sm-9">
+																											<select class="form-control wide mb-3" name="task-editor-id" tabindex="null">
+																												{% for editor in task_editors %}
+																												<option value="{{editor.id}}">{{editor.user.first_name}} {{editor.user.last_name}}</option>
+																												{% endfor %}
+																											</select>
+																										</div>
+																									</div>																									
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Deadline</label>
+																										<div class="col-sm-4">
+																											<input type="date" required class="form-control" name="task-enddate" id="task-enddate">
+																										</div>
+																										<div class="col-sm-4">
+																											<input type="time" required class="form-control" min="08:00" max="17:00" step="3600" name="task-endtime" >
+																										</div>
+																									</div>
+																									<div class="mb-1 row">
+																										<div class="col-sm-10">
+																											<button type="submit" class="btn btn-primary">Submit Details</button>
+																											<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																										</div>
+																									</div>
+																								</form>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																			<div class="modal-footer">
+																				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																			</div>
+																	</div>
+																	</div>
+																</div>
+
+
+															</div>
+														</div>
 													</div>
 													<div class="card-body">
+														{% if task_messages %}
+															{% for message in task_messages %}
+														<div class="alert alert-success alert-dismissible fade show" role="alert">
+															<strong>Success!</strong> {{ message }}
+															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+														</div>
+															{% endfor %}
+														{% endif %}
 														<div class="table-responsive">
-															<table class="table table-responsive-md">
+															<table class="table table-responsive-md" id="tasks-table">
 																<thead>
 																	<tr>
 																		<th style="width:80px;"><strong>#</strong></th>
-																		<th><strong>Title given</strong></th>
-																		<th><strong>Team</strong></th>
+																		<th><strong>Title</strong></th>
+																		<th><strong>Editor</strong></th>
+																		<th><strong>Journalist Team</strong></th>
 																		<th><strong>Progress</strong></th>
-																		<th><strong>Action</strong></th>
-																		<th></th>
+																		<th><strong>View Progress</strong></th>
+																		<th><strong>Other Details</strong></th>
 																	</tr>
 																</thead>
 																<tbody>
+
+																	{% if tasks %}
+																		{% for task in tasks %}
 																	<tr>
-																		<td><strong>01</strong></td>
-																		<td>Title 1</td>
+																		<td><strong>{{ task.id }}</strong></td>
+																		<td>{{ task.title }}</td>
+																		<td>{{ task.editor.user.first_name }} {{ task.editor.user.last_name }}</td>
 																		<td>
-																			<div class="accordion-item">
-																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapseTeam" aria-controls="collapseTeam" aria-expanded="false" role="button">
-																					<span class="accordion-header-icon"></span>
-																				  <span class="accordion-header-text">Team List</span>
-																				  <span class="accordion-header-indicator"></span>
-																				</div>
-																				<div id="collapseTeam" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
-																				  <div class="accordion-body-text">
-																						 List of Team Members
-																				  </div>
-																				</div>
-																			</div>	
-																		</td>
-																		<td>
-																			<div class="progress mb-5">
-																				<div class="progress-bar progress-animated bg-warning mx-0" style="width: 30%"></div>
-																			</div>
-																		</td>
-																		<td>
-																			<div class="dropdown">
-																				<button type="button" class="btn btn-warning light sharp" data-bs-toggle="dropdown">
-																					<svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
-																				</button>
-																				<div class="dropdown-menu">
-																					<a class="dropdown-item" href="./current-article.html">Edit Instructions</a>
-																					<a class="dropdown-item" href="#">Edit Instructions</a>
-																					<a class="dropdown-item" href="#">Delete Task</a>
+
+																			<a href="#teamMembers{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Team Members</a>
+																			<div class="modal fade" id="teamMembers{{task.id}}" tabindex="-1" aria-labelledby="teamMembers{{task.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Team Members for {{task.title}} Task</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="list-group">
+																								<a href="javascript:void()" class="list-group-item list-group-item-action active">{{task.editor.user.first_name}} {{task.editor.user.last_name}} -- Editor</a>
+																								{% for journalist in task.journalists.all %}
+																									<a href="javascript:void()" class="list-group-item list-group-item-action">{{journalist.user.first_name}} {{journalist.user.last_name}} -- {{journalist.user.profile.capacity}}</a>
+																								{% empty %}
+																									<a href="javascript:void()" class="list-group-item list-group-item-action disabled">No Journalist Assigned</a>
+																								{% endfor %}	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
 																				</div>
 																			</div>
 																		</td>
-																	</tr>
+																		<td> 
+																			<div class="progress">
+																				<div class="progress-bar progress-animated bg-success mx-0" style="width:{{task.progress}}%"></div>
+																			</div>
+																		</td>																		
+																		<td><a href="#otherDetails{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Other Details</a></td>
+																		<td>
+																			<a href="#otherDetails{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Other Details</a>
+																			<div class="modal fade" id="otherDetails{{task.id}}" tabindex="-1" aria-labelledby="otherDetails{{task.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Other Details for {{task.title}} Task</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="basic-list-group">
+																								<ul class="list-group list-group-flush">
+																									<li class="list-group-item">Project - {{ task.project.title }}</li>
+																									<li class="list-group-item">deadline - {{ task.deadline }}</li>
+																									{% if task.status == "complete" %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									{% else %}
+																										{% if task.remaining_days < 3 %}
+																									<li class="list-group-item list-group-item-warning">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-warning">{{ task.remaining_days }} days remaining</li>
+																										{% elif task.remaining_days <= 1 %}
+																									<li class="list-group-item list-group-item-danger">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-danger">{{ task.remaining_days }} day(s) remaining</li>
+																										{% else %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-success">{{ task.remaining_days }} days remaining</li>
+																										{% endif %}
+																									{% endif %}
+																								</ul>	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>	
+																		{% endfor %}
+																	
+																	{% else %}
+																	{% endif %}
+																	
 																	
 																</tbody>
 															</table>
@@ -300,7 +592,59 @@
     <!-- Required vendors -->
     {% include 'workflow-scripts.html' %}
 	{% block workflow-scripts-section %}
-	{% endblock %}	
+	{% endblock %}
+
+	<script src="{% static 'workflow-static/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+
+	<script >
+		var table = $('#projects-table').DataTable({
+			"scrollX": true,
+			language: {
+				paginate: {
+				next: '<i class="fa fa-angle-double-right" aria-hidden="true"></i>',
+				previous: '<i class="fa fa-angle-double-left" aria-hidden="true"></i>' 
+				}
+			}
+		});
+
+
+
+		// Get the current date
+		var currentDate = new Date();
+
+		// Calculate the date one week from now
+		var oneWeekFromNow = new Date();
+		oneWeekFromNow.setDate(currentDate.getDate() + 7);
+
+		// Format the minimum date in yyyy-mm-dd format
+		var minimumDate = oneWeekFromNow.toISOString().split('T')[0];
+
+		console.log(minimumDate)
+
+		// Set the minimum date value for the input field
+		document.getElementById("task-enddate").setAttribute("min", minimumDate);
+
+	</script>
+
+
+	{% if project_errors %}	
+	<script>	
+		document.getElementById('newProjectButton').click();
+	</script>
+	{% endif %}	
+
+	{% if task_errors %}	
+	<script>			
+		document.getElementById('taskCollapseAccordion').click();
+		document.getElementById('newTaskButton').click();
+	</script>
+	{% endif %}	
+
+	{% if task_messages %}	
+	<script>			
+		document.getElementById('taskCollapseAccordion').click();
+	</script>
+	{% endif %}	
 	
 	
 	

@@ -13,6 +13,9 @@
 	{% include 'workflow-styles.html' %}
 	{% block workflow-styles-section %}
 	{% endblock %}
+	
+
+	<link href="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
 
 </head>
 <body>
@@ -48,7 +51,7 @@
 			<div class="container-fluid">
 				<div class="page-titles">
 					<ol class="breadcrumb">
-						<li class="breadcrumb-item"><a href="javascript:void(0)">Current Articles</a></li>
+						<li class="breadcrumb-item"><a href="javascript:void(0)">Tasks</a></li>
 					</ol>
 				</div>
 
@@ -57,9 +60,9 @@
 						<div id="accordion-one" class="accordion doctor-list">
 							<div class="accordion__item">
 								<div class="accordion__header collapsed rounded-lg" id="headingThree" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-controls="collapseThree"  role="button"  aria-expanded="true">
-									<span class="accordion__header-alphabet">New Task</span>
+									<span class="accordion__header-alphabet">New Tasks</span>
 									<span class="accordion__header-line flex-grow-1"></span>
-									<span class="accordion__header--text">1 Project</span>
+									<span class="accordion__header--text">{{new_tasks.count}} Task(s)</span>
 									<span class="accordion__header--indicator style_two"></span>
 								</div>
 								<div id="collapseThree" class="collapse  show" aria-labelledby="headingThree" data-bs-parent="#accordion-one">
@@ -77,34 +80,169 @@
 																	<tr>
 																		<th style="width:80px;"><strong>#</strong></th>
 																		<th><strong>Title given</strong></th>
-																		<th><strong>Instruction Text</strong></th>
+																		<th><strong>Description Text</strong></th>
+																		<th><strong>Deadline</strong></th>
+																		<th><strong>Other Details</strong></th>
 																		<th><strong>Action</strong></th>
-																		<th></th>
 																	</tr>
 																</thead>
 																<tbody>
+																	{% if new_tasks %}
+
+																	{% for task in new_tasks %}
 																	<tr>
-																		<td><strong>01</strong></td>
-																		<td>Title 1</td>
+																		<td style="width:80px;">{{task.id}}</td>
+																		<td>{{task.title}}</td>
+																		<td><p>{{task.description}}</p></td>
+																		<td>{{ task.deadline }}</td>
 																		<td>
-																			<div class="accordion-item">
-																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapse6One" aria-controls="collapse6One" aria-expanded="false" role="button">
-																					<span class="accordion-header-icon"></span>
-																				  <span class="accordion-header-text">Reasons and Instructions</span>
-																				  <span class="accordion-header-indicator"></span>
+																			<a href="#otherDetails{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Other Details</a>
+																			<div class="modal fade" id="otherDetails{{task.id}}" tabindex="-1" aria-labelledby="otherDetails{{task.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Other Details for {{task.title}} Task</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="basic-list-group">
+																								<ul class="list-group list-group-flush">
+																									<li class="list-group-item">Project - {{ task.project.title }}</li>
+																									{% if task.status == "complete" %}
+																									{% else %}
+																										{% if task.remaining_days < 3 %}
+																									<li class="list-group-item list-group-item-warning">{{ task.remaining_days }} days remaining</li>
+																										{% elif task.remaining_days <= 1 %}
+																									<li class="list-group-item list-group-item-danger">{{ task.remaining_days }} day(s) remaining</li>
+																										{% else %}
+																									<li class="list-group-item list-group-item-success">{{ task.remaining_days }} days remaining</li>
+																										{% endif %}
+																									{% endif %}
+																								</ul>	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
 																				</div>
-																				<div id="collapse6One" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
-																				  <div class="accordion-body-text">
-																						 List of Reasons and explanations
-																				  </div>
-																				</div>
-																			</div>	
+																			</div>
+																		
 																		</td>
-																		<td><a href="javascript:void(0);" class="btn btn-danger mb-4">SET UP</a></td>
+																		<td>
+																		{% if task_journalists %}
+																		<a href="#setUpTaskModalToggle" data-bs-toggle="modal" onclick="populateTaskModal('{{task.id}}','{{task.title}}','{{task.description}}')" class="btn btn-primary mb-4">SET UP</a>
+																		{% else %}
+																		<a href="#noTaskJournalists" data-bs-toggle="modal" class="btn btn-danger mb-4">SET UP</a>
+																		{% endif %}
+																		
+																		</td>
 																	</tr>
+																	
+																	{% endfor %}
+																	
+																	{% else %}
+																	{% endif %}
+																	
 																	
 																</tbody>
 															</table>
+
+															{% comment %} set up task modal {% endcomment %}
+															<div class="modal fade" id="setUpTaskModalToggle" tabindex="-1" aria-labelledby="setUpTaskModalToggleLabel" aria-hidden="true">
+																<div class="modal-dialog modal-lg">
+																	<div class="modal-content">
+																		<div class="modal-header">
+																			<h5 class="modal-title" id="composeModalToggleLabel"></h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																		</div>
+																		<div class="modal-body">
+																			<div class="col-lg-12">
+																				<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																					<div class="compose-content">
+																						
+																						<p id="setupTaskDescription" class="mb-3"></p>
+																						<div class="basic-form">
+																							<form method="post">
+																								{% csrf_token %}
+																								{% if task_setup_errors %}
+																									{% for error in task_setup_errors %}
+																								<div class="alert alert-warning alert-dismissible fade show" role="alert">
+																									<strong>Error!</strong> {{ error }}
+																									<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																								</div> 
+																									{% endfor %}
+																								{% endif %}
+																								<input type="hidden" name="setupTaskId" value="">
+																								<div id="journalists-section">
+																									<div class="journalist-section border border-success rounded p-3 m-2">
+																										<div class="mb-3 row">
+																											<label class="col-sm-3 col-form-label" for="journalist">Journalist: </label>
+																											<div class="col-sm-9">
+																												<select name="journalist" class="journalist-select">
+																												{% for journalist in task_journalists %}
+																												<option value="{{journalist.id}}">{{journalist.user.first_name}} {{journalist.user.last_name}}, {{journalist.type}}</option>
+																												{% endfor %}
+																												</select>
+																											</div>
+																										</div>
+																										<div class="mb-3 row">
+																											<label class="col-sm-3 col-form-label" for="instructions">Instructions</label>
+																											<div class="col-sm-9">
+																												<textarea required class="form-control instructions-field" rows="4" name="instructions"></textarea>
+																											</div>
+																										</div>
+																									</div>
+																								</div>
+
+																								<div class="mb-1 mt-2 row">
+																									<div class="col-sm-10">
+																										<button class="btn btn-success" id="add-journalist-btn" onclick="addNewJournalistSection()" type="button">Add Journalist</button>
+																									</div>
+																								</div>																								
+
+																								<div class="mb-1 mt-2 row">
+																									<div class="col-sm-10">
+																										<button type="submit" class="btn btn-primary">Submit Details</button>
+																										<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="modal-footer">
+																			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																		</div>
+																</div>
+																</div>
+															</div>
+
+															<div class="modal fade" id="noTaskJournalists" tabindex="-1" aria-labelledby="noTaskJournalistsLabel" aria-hidden="true">
+																<div class="modal-dialog modal-lg">
+																	<div class="modal-content">
+																		<div class="modal-header">
+																			<h5 class="modal-title" id="composeModalToggleLabel">Error</h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																		</div>
+																		<div class="modal-body">
+																			<div class="col-lg-12">
+																				<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																					<div class="compose-content">
+																						<p>Cannot set up Task. All Journalists are preoccupied at the moment. Try again later</p>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="modal-footer">
+																			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																		</div>
+																</div>
+																</div>
+															</div>
 														</div>
 													</div>
 												</div>
@@ -117,7 +255,7 @@
 								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo">
 									<span class="accordion__header-alphabet">Ongoing Article Tasks</span>
 									<span class="accordion__header-line flex-grow-1"></span>
-									<span class="accordion__header--text">2 Projects</span>
+									<span class="accordion__header--text">{{progressing_tasks.count}} Task(s)</span>
 									<span class="accordion__header--indicator style_two"></span>
 								</div>
 								<div id="default_collapseTwo" class="collapse accordion__body" data-bs-parent="#accordion-one">
@@ -126,57 +264,106 @@
 											<div class="col-lg-12">
 												<div class="card">
 													<div class="card-header">
-														<h4 class="card-title">Recent Assigned Tasks</h4>
+														<h4 class="card-title">On Going Tasks</h4>
 													</div>
 													<div class="card-body">
 														<div class="table-responsive">
-															<table class="table table-responsive-md">
+															<table class="table table-responsive-md" id="tasks-table">
 																<thead>
 																	<tr>
 																		<th style="width:80px;"><strong>#</strong></th>
-																		<th><strong>Title given</strong></th>
-																		<th><strong>Team</strong></th>
+																		<th><strong>Title</strong></th>
+																		<th><strong>Journalist Team</strong></th>
 																		<th><strong>Progress</strong></th>
-																		<th><strong>Action</strong></th>
-																		<th></th>
+																		<th><strong>Other Details</strong></th>
 																	</tr>
 																</thead>
 																<tbody>
+
+																	{% if progressing_tasks %}
+																		{% for task in progressing_tasks %}
 																	<tr>
-																		<td><strong>01</strong></td>
-																		<td>Title 1</td>
+																		<td><strong>{{ task.id }}</strong></td>
+																		<td>{{ task.title }}</td>
 																		<td>
-																			<div class="accordion-item">
-																				<div class="accordion-header rounded-lg" id="accord-6One" data-bs-toggle="collapse" data-bs-target="#collapseTeam" aria-controls="collapseTeam" aria-expanded="false" role="button">
-																					<span class="accordion-header-icon"></span>
-																				  <span class="accordion-header-text">Team List</span>
-																				  <span class="accordion-header-indicator"></span>
-																				</div>
-																				<div id="collapseTeam" class="accordion__body collapse show" aria-labelledby="accord-6One" data-bs-parent="#accordion-six" style="">
-																				  <div class="accordion-body-text">
-																						 List of Team Members
-																				  </div>
-																				</div>
-																			</div>	
-																		</td>
-																		<td>
-																			<div class="progress mb-5">
-																				<div class="progress-bar progress-animated bg-warning mx-0" style="width: 30%"></div>
-																			</div>
-																		</td>
-																		<td>
-																			<div class="dropdown">
-																				<button type="button" class="btn btn-warning light sharp" data-bs-toggle="dropdown">
-																					<svg width="20px" height="20px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
-																				</button>
-																				<div class="dropdown-menu">
-																					<a class="dropdown-item" href="./current-article.html">Edit Instructions</a>
-																					<a class="dropdown-item" href="#">Edit Instructions</a>
-																					<a class="dropdown-item" href="#">Delete Task</a>
+
+																			<a href="#teamMembers{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Team Members</a>
+																			<div class="modal fade" id="teamMembers{{task.id}}" tabindex="-1" aria-labelledby="teamMembers{{task.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Team Members for {{task.title}} Task</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="list-group">
+																								<a href="javascript:void()" class="list-group-item list-group-item-action active">{{task.editor.user.first_name}} {{task.editor.user.last_name}} -- Editor</a>
+																								{% for journalist in task.journalists.all %}
+																									<a href="javascript:void()" class="list-group-item list-group-item-action">{{journalist.user.first_name}} {{journalist.user.last_name}} -- {{journalist.user.profile.capacity}}</a>
+																								{% empty %}
+																									<a href="javascript:void()" class="list-group-item list-group-item-action disabled">No Journalist Assigned</a>
+																								{% endfor %}	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
 																				</div>
 																			</div>
 																		</td>
-																	</tr>
+																		<td> 
+																			<div class="progress">
+																				<div class="progress-bar progress-animated bg-success mx-0" style="width:{{task.progress}}%"></div>
+																			</div>
+																		</td>
+																		<td><a href="{% url 'editor-current-article' task_id=task.id %}" class="btn btn-outline-info" id="teamMembers">View Progress -></a></td>
+																		<td>
+																			<a href="#otherDetails{{task.id}}" data-bs-toggle="modal"  class="btn" id="teamMembers">Other Details</a>
+																			<div class="modal fade" id="otherDetails{{task.id}}" tabindex="-1" aria-labelledby="otherDetails{{task.id}}Label" aria-hidden="true">
+																				<div class="modal-dialog modal-dialog-centered" role="document">
+																					<div class="modal-content">
+																						<div class="modal-header">
+																							<h5 class="modal-title">Other Details for {{task.title}} Task</h5>
+																							<button type="button" class="btn-close" data-bs-dismiss="modal">
+																							</button>
+																						</div>
+																						<div class="modal-body">
+																							<div class="basic-list-group">
+																								<ul class="list-group list-group-flush">
+																									<li class="list-group-item">Project - {{ task.project.title }}</li>
+																									<li class="list-group-item">deadline - {{ task.deadline }}</li>
+																									{% if task.status == "complete" %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									{% else %}
+																										{% if task.remaining_days < 3 %}
+																									<li class="list-group-item list-group-item-warning">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-warning">{{ task.remaining_days }} days remaining</li>
+																										{% elif task.remaining_days <= 1 %}
+																									<li class="list-group-item list-group-item-danger">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-danger">{{ task.remaining_days }} day(s) remaining</li>
+																										{% else %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-success">{{ task.remaining_days }} days remaining</li>
+																										{% endif %}
+																									{% endif %}
+																								</ul>	
+																							</div>
+																						</div>
+																						<div class="modal-footer">
+																							<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">Close</button>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</td>
+																	</tr>	
+																		{% endfor %}
+																	
+																	{% else %}
+																	{% endif %}
+																	
 																	
 																</tbody>
 															</table>
@@ -302,7 +489,119 @@
 	{% block workflow-scripts-section %}
 	{% endblock %}	
 	
+
+	<script src="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+	{% if new_task_messages %}
+	<input type="hidden" id="new_task_messages" value="{{new_task_messages}}">
+	<script>
+		$(document).ready(function() {
+			var messages = $('#new_task_messages').val();
+
+			Swal.fire({
+				title: 'Task Assignment Message',
+				text: messages,
+				icon: 'success'
+			})			
+		});	
+	</script>
+	{% endif %}
 	
+	<script>
+
+		function populateTaskModal(id,title,description){
+			document.getElementById("composeModalToggleLabel").innerHTML = title + " Task";
+			document.getElementById("setupTaskDescription").innerHTML = description;
+
+			document.getElementsByName('setupTaskId')[0].value=id;
+		}
+
+		// Array to store selected journalist IDs
+		var selectedJournalists = [];
+
+		// Function to disable selected journalists in the dropdown
+		function disableSelectedJournalists() {
+			$('.journalist-select option').each(function() {
+				var journalistId = $(this).val();
+				if (selectedJournalists.includes(journalistId)) {
+					$(this).prop('disabled', true);
+				} else {
+					$(this).prop('disabled', false);
+				}
+			});
+		}
+
+		function addNewJournalistSection(){
+			
+			var journalistSectionCount = $('.journalist-section').length;
+			var journalistSelectHtml = `
+				<div class="mb-3 row">
+					<label class="col-sm-3 col-form-label" for="journalist${journalistSectionCount + 1}">Description</label>
+					<div class="col-sm-9">
+						<select name="journalist${journalistSectionCount + 1}" class="journalist-select">
+							{% for journalist in task_journalists %}
+								<option value="{{journalist.id}}">{{journalist.user.first_name}} {{journalist.user.last_name}}, {{journalist.type}}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label class="col-sm-3 col-form-label" for="instructions${journalistSectionCount + 1}">Instructions</label>
+					<div class="col-sm-9">
+						<textarea required class="form-control instructions-field" rows="4" name="instructions${journalistSectionCount + 1}"></textarea>
+					</div>
+				</div>				
+				<div class="mb-3 row">
+					<div class="col-sm-9 offset-sm-3">
+						<button class="btn btn-danger remove-journalist-btn" onclick="removeJournalistSection('journalistSection${journalistSectionCount + 1}')" type="button">Remove Journalist</button>
+					</div>
+				</div>
+			`;
+			
+			$('#journalists-section').append(`<div class="journalist-section  border border-success rounded p-3 m-2" id="journalistSection${journalistSectionCount + 1}">${journalistSelectHtml}</div>`);
+			//disableSelectedJournalists();
+
+			// Add selected journalist to the array
+			$('.journalist-select').on('change', function() {
+				var selectedJournalistId = $(this).val();
+				selectedJournalists.push(selectedJournalistId);
+				//disableSelectedJournalists();
+			});
+
+			// Disable add journalist button when the maximum number of journalists is reached
+			if (journalistSectionCount + 1 === 3) {
+				$('#add-journalist-btn').prop('disabled', true);
+				console.log("Button should be disabled")
+			}
+		}
+
+		function removeJournalistSection(sectionID){
+			var journalistSectionCount = $('.journalist-section').length;
+			
+			if (journalistSectionCount > 1) {
+				$('#add-journalist-btn').prop('disabled', true);				
+				console.log("journalistSectionCount: ", journalistSectionCount)
+				// Remove the parent journalist section
+				var section_id = '#'+sectionID;
+				$(section_id).remove();
+			}
+			
+			
+			// Enable the Add Journalist button
+			$("#add-journalist-btn").prop("disabled", false);
+
+		}
+
+		// Event listener for adding journalist section
+		//$('.add-journalist-btn').on('click', function() {
+			
+		//});
+
+		$(document).ready(function() {
+			
+		});
+	</script>
+
 	
 </body>
 </html>

@@ -677,7 +677,7 @@
 							<span class="nav-text">Workflow</span>
 						</a>
                         <ul aria-expanded="false">
-                            <li><a href="{% url 'journalist-current-article' %}">Current</a></li>
+                            {% comment %} <li><a href="{% url 'journalist-current-article' %}">Current</a></li> {% endcomment %}
                             <li><a href="{% url 'journalist-article-list' %}">List</a></li>
                             <!-- <li><a href="{% url 'journalist-submitted-articles' %}">Submitted</a></li> -->
 							<li><a href="{% url 'journalist-reviews' %}" >Reviews</a></li>

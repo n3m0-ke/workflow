@@ -252,7 +252,7 @@
 								</div>
 							</div>
 							<div class="accordion__item">
-								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo">
+								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseTwo" id="taskCollapseAccordion">
 									<span class="accordion__header-alphabet">Ongoing Article Tasks</span>
 									<span class="accordion__header-line flex-grow-1"></span>
 									<span class="accordion__header--text">{{progressing_tasks.count}} Task(s)</span>
@@ -267,16 +267,26 @@
 														<h4 class="card-title">On Going Tasks</h4>
 													</div>
 													<div class="card-body">
+													{% if messages %}
+														{% for message in messages %}
+															{% if 'task_miss' in message.tags %}
+													<div class="alert alert-danger alert-dismissible fade show" role="alert">
+														<strong>Error!</strong> {{ message }}
+														<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+													</div>
+															{% endif %}
+														{% endfor %}
+													{% endif %}
 														<div class="table-responsive">
 															<table class="table table-responsive-md" id="tasks-table">
 																<thead>
 																	<tr>
-																		<th style="width:80px;"><strong>#</strong></th>
-																		<th><strong>Title</strong></th>
-																		<th><strong>Journalist Team</strong></th>
-																		<th><strong>Progress</strong></th>
-																		<th><strong>Action</strong></th>
-																		<th><strong>Other Details</strong></th>
+																		<th style="width:40px;"><strong>#</strong></th>
+																		<th style="width:40px;"><strong>Title</strong></th>
+																		<th style="width:40px;"><strong>Journalist Team</strong></th>
+																		<th style="width:40px;"><strong>Progress</strong></th>
+																		<th style="width:40px;"><strong>Action</strong></th>
+																		<th style="width:40px;"><strong>Other Details</strong></th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -335,8 +345,9 @@
 																								<ul class="list-group list-group-flush">
 																									<li class="list-group-item">Project - {{ task.project.title }}</li>
 																									<li class="list-group-item">deadline - {{ task.deadline }}</li>
-																									{% if task.status == "complete" %}
+																									{% if task.status == "complete" or task.status == "approved" %}
 																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-info">Submitted with - {{ task.deadline|timeuntil:task.end_date_time }} to go</li>
 																									{% else %}
 																										{% if task.remaining_days < 3 %}
 																									<li class="list-group-item list-group-item-warning">status - {{ task.status }}</li>
@@ -446,7 +457,7 @@
 																		</td>
 																		<td>
 																		{% if task.status == 'approved' %}
-																		<span class="text text-success">Approved</span>
+																		<span class="text text-success"><a href="{% url 'blog' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">View Blog</a> </span>
 																		{% else %}
 																			{% if task.submission_status == 'submitted' %}
 																			<span class="text text-info">Awaiting Publication</span>
@@ -560,7 +571,7 @@
 
 	<script src="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.js' %}"></script>
 
-	{% if new_task_messages %}
+	{% if new_task_messages%}
 	<input type="hidden" id="new_task_messages" value="{{new_task_messages}}">
 	<script>
 		$(document).ready(function() {
@@ -571,6 +582,14 @@
 				text: messages,
 				icon: 'success'
 			})			
+		});	
+	</script>
+	{% endif %}
+
+	{% if messages %}
+	<script>
+		$(document).ready(function() {
+			document.getElementById('taskCollapseAccordion').click();			
 		});	
 	</script>
 	{% endif %}

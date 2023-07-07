@@ -64,6 +64,17 @@
 								{% endfor %}
 							</div>
 						</div>
+
+						{% if section.submission_status == 'rejected' %}
+						<div class="dropdown ms-3 d-inline-block mb-4">
+							<div class="btn btn-outline-primary dropdown-toggle bg-danger" data-bs-toggle="dropdown" >							
+								<i class="text-danger fa fa-exclamation-triangle" id="altered-instruction-indicator"></i> Rejected Check Reason								
+							</div>
+							<div class="dropdown-menu dropdown-menu-left">
+								{{rejection.reason}}
+							</div>
+						</div>						
+						{% endif %}
 					</div>
                 </div>
 
@@ -113,7 +124,7 @@
 								<textarea class="form-control" rows="7" required name="section-text" placeholder="Artticle Section Text">{{section.section_text}}</textarea>
 							</div>
 							
-							{% if section.submision_status == 'submitted' %}
+							{% if section.submission_status == 'submitted' %}
 								<a href="#" class="btn btn-primary">Preview</a>
 							{% else %}
 								<button class="btn btn-primary" name="action" value="save" type="submit">Save and Continue later</button>

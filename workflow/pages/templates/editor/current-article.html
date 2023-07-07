@@ -53,8 +53,7 @@
 				</div>
 				<div class="d-flex flex-wrap d-review justify-content-between">
 					<div class="d-flex align-items-center flex-wrap">
-						{% if task.status == 'completed' and task.submission_status == 'in_progress'%}
-						<a href="javascript:void(0);" class="btn btn-danger mb-4">REJECT</a>
+						{% if task.status == 'completed' and task.submission_status != 'submitted'%}
 						<a href="#approveArticleModalToggle" data-bs-toggle="modal" class="btn btn-success mb-4 ms-3">APPROVE</a>
 						{% endif %}
 
@@ -133,10 +132,20 @@
 							</div>
 							<div class="dropdown-menu dropdown-menu-left">
 								{% for instruction in instructions %}
-								<a class="dropdown-item" href="javascript:void(0);">{{instruction.journalist.user.first_name}} {{instruction.journalist.user.first_name}} - {{instruction.instruction}}</a>								
+								<a class="dropdown-item" href="javascript:void(0);">{{instruction.journalist.user.first_name}} {{instruction.journalist.user.last_name}} - {{instruction.instruction}}</a>								
 								{% endfor %}
 							</div>
 						</div>
+						{% if task.submission_status == 'rejected' %}
+						<div class="dropdown ms-3 d-inline-block mb-4">
+							<div class="btn btn-outline-primary dropdown-toggle bg-danger" data-bs-toggle="dropdown" >							
+								<i class="text-danger fa fa-exclamation-triangle" id="altered-instruction-indicator"></i> Rejected Check Reason								
+							</div>
+							<div class="dropdown-menu dropdown-menu-left">
+								{{rejection.reason}}
+							</div>
+						</div>						
+						{% endif %}
 					</div>
                 </div>
 
@@ -174,14 +183,70 @@
 							</div>
 
 							{% for journalist in task.journalists.all %}
-							<a href="#composeModalToggle" role="button" data-bs-toggle="modal" class="list-group-item">
+							<a href="#editInstructionModalToggle" data-bs-toggle="modal" onclick="populateEditInstructionModal('{{journalist.id}}','{{journalist.user.first_name}} {{journalist.user.last_name}}')" class="list-group-item">
 								<span class="icon-warning">
 									<i class="fa fa-circle" aria-hidden="true"></i>
 								</span>
 								{{journalist.user.first_name}} {{journalist.user.last_name}}<br/>								
-								Capacity- {{journalist.type}}
+								Capacity- {{journalist.type}} 
+
+
 							</a>
 							{% endfor %}
+							<div class="modal fade" id="editInstructionModalToggle" tabindex="-1" aria-labelledby="editInstructionModalToggleLabel" aria-hidden="true">
+								<div class="modal-dialog modal-lg">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="editInstructionModalToggleLabel"></h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+										</div>
+										<div class="modal-body">
+											<div class="col-lg-12">
+												<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+													<div class="compose-content">
+														
+														<p id="setupTaskDescription" class="mb-3"></p>
+														<div class="basic-form">
+															<form method="post">
+															<input type="hidden" name="journalist-id" value="">
+																{% csrf_token %}
+																{% if task_setup_errors %}
+																	{% for error in task_setup_errors %}
+																<div class="alert alert-warning alert-dismissible fade show" role="alert">
+																	<strong>Error!</strong> {{ error }}
+																	<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																</div> 
+																	{% endfor %}
+																{% endif %}
+																<div id="journalists-section">
+																	<div class="journalist-section border border-success rounded p-3 m-2">
+																		<div class="mb-3 row">
+																			<label class="col-sm-3 col-form-label" for="instructions">New Instructions</label>
+																			<div class="col-sm-9">
+																				<textarea required class="form-control instructions-field" rows="4" name="instructions"></textarea>
+																			</div>
+																		</div>
+																	</div>
+																</div>																							
+
+																<div class="mb-1 mt-2 row">
+																	<div class="col-sm-10">
+																		<button type="submit" class="btn btn-primary" name="edit-instruction">Submit Details</button>
+																		<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																	</div>
+																</div>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+										</div>
+								</div>
+								</div>
+							</div>
 						</div>
 						{% if task.journalists.all.count < 3 and task_journalists %}
 						{% comment %} <a href="#addJournalistModalToggle" data-bs-toggle="modal" class="btn btn-success ms-3 mb-4 mt-4">ADD Journalist</a> {% endcomment %}
@@ -252,332 +317,7 @@
 
 					</div>
 
-					<div class="modal fade" id="viewModalToggle" tabindex="-1" aria-labelledby="viewModalToggleLabel" aria-hidden="true">
-						<div class="modal-dialog modal-xl">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="viewModalToggleLabel">New message</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body">
-									<div class="row">
-										<div class="col-xl-4">
-											<div class="row">
-												<div class="col-xl-12">
-													<div class="card">
-														<div class="card-body">
-															<div class="profile-statistics">
-																<div class="text-center">
-																	<div class="row">
-																		<div class="col">
-																			<h3 class="m-b-0">150</h3><span>Follower</span>
-																		</div>
-																		<div class="col">
-																			<h3 class="m-b-0">140</h3><span>Place Stay</span>
-																		</div>
-																		<div class="col">
-																			<h3 class="m-b-0">45</h3><span>Reviews</span>
-																		</div>
-																	</div>
-																	<div class="mt-4">
-																		<a href="javascript:void(0);" class="btn btn-primary mb-1 me-1">Follow</a> 
-																		<a href="javascript:void(0);" class="btn btn-primary mb-1" data-bs-toggle="modal" data-bs-target="#sendMessageModal">Send Message</a>
-																	</div>
-																</div>
-																<!-- Modal -->
-																<div class="modal fade" id="sendMessageModal">
-																	<div class="modal-dialog modal-dialog-centered" role="document">
-																		<div class="modal-content">
-																			<div class="modal-header">
-																				<h5 class="modal-title">Send Message</h5>
-																				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-																			</div>
-																			<div class="modal-body">
-																				<form class="comment-form">
-																					<div class="row"> 
-																						<div class="col-lg-6">
-																							<div class="mb-3">
-																								<label class="text-black font-w600 form-label">Name <span class="required">*</span></label>
-																								<input type="text" class="form-control" value="Author" name="Author" placeholder="Author">
-																							</div>
-																						</div>
-																						<div class="col-lg-6">
-																							<div class="mb-3">
-																								<label class="text-black font-w600 form-label">Email <span class="required">*</span></label>
-																								<input type="text" class="form-control" value="Email" placeholder="Email" name="Email">
-																							</div>
-																						</div>
-																						<div class="col-lg-12">
-																							<div class="mb-3">
-																								<label class="text-black font-w600 form-label">Comment</label>
-																								<textarea rows="8" class="form-control" name="comment" placeholder="Comment"></textarea>
-																							</div>
-																						</div>
-																						<div class="col-lg-12">
-																							<div class="mb-3 mb-0">
-																								<input type="submit" value="Post Comment" class="submit btn btn-primary" name="submit">
-																							</div>
-																						</div>
-																					</div>
-																				</form>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="col-xl-12">
-													<div class="card">
-														<div class="card-body">
-															<div class="profile-blog">
-																<h5 class="text-primary d-inline">Today Highlights</h5>
-																<img src="images/profile/1.jpg" alt="" class="img-fluid mt-4 mb-4 w-100">
-																<h4><a href="post-details.html" class="text-black">Darwin Creative Agency Theme</a></h4>
-																<p class="mb-0">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="col-xl-12">
-													<div class="card">
-														<div class="card-body">
-															<div class="profile-interest">
-																<h5 class="text-primary d-inline">Interest</h5>
-																<div class="row mt-4 sp4" id="lightgallery">
-																	<a href="images/profile/2.jpg" data-exthumbimage="images/profile/2.jpg" data-src="images/profile/2.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/2.jpg" alt="" class="img-fluid">
-																	</a>
-																	<a href="images/profile/3.jpg" data-exthumbimage="images/profile/3.jpg" data-src="images/profile/3.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/3.jpg" alt="" class="img-fluid">
-																	</a>
-																	<a href="images/profile/4.jpg" data-exthumbimage="images/profile/4.jpg" data-src="images/profile/4.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/4.jpg" alt="" class="img-fluid">
-																	</a>
-																	<a href="images/profile/3.jpg" data-exthumbimage="images/profile/3.jpg" data-src="images/profile/3.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/3.jpg" alt="" class="img-fluid">
-																	</a>
-																	<a href="images/profile/4.jpg" data-exthumbimage="images/profile/4.jpg" data-src="images/profile/4.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/4.jpg" alt="" class="img-fluid">
-																	</a>
-																	<a href="images/profile/2.jpg" data-exthumbimage="images/profile/2.jpg" data-src="images/profile/2.jpg" class="mb-1 col-lg-4 col-xl-4 col-sm-4 col-6">
-																		<img src="images/profile/2.jpg" alt="" class="img-fluid">
-																	</a>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-												<div class="col-xl-12">
-													<div class="card">
-														<div class="card-body">
-															<div class="profile-news">
-																<h5 class="text-primary d-inline">Our Latest News</h5>
-																<div class="media pt-3 pb-3">
-																	<img src="images/profile/5.jpg" alt="image" class="me-3 rounded" width="75">
-																	<div class="media-body">
-																		<h5 class="m-b-5"><a href="post-details.html" class="text-black">Collection of textile samples</a></h5>
-																		<p class="mb-0">I shared this on my fb wall a few months back, and I thought.</p>
-																	</div>
-																</div>
-																<div class="media pt-3 pb-3">
-																	<img src="images/profile/6.jpg" alt="image" class="me-3 rounded" width="75">
-																	<div class="media-body">
-																		<h5 class="m-b-5"><a href="post-details.html" class="text-black">Collection of textile samples</a></h5>
-																		<p class="mb-0">I shared this on my fb wall a few months back, and I thought.</p>
-																	</div>
-																</div>
-																<div class="media pt-3 pb-3">
-																	<img src="images/profile/7.jpg" alt="image" class="me-3 rounded" width="75">
-																	<div class="media-body">
-																		<h5 class="m-b-5"><a href="post-details.html" class="text-black">Collection of textile samples</a></h5>
-																		<p class="mb-0">I shared this on my fb wall a few months back, and I thought.</p>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div class="col-xl-8">
-											<div class="card">
-												<div class="card-body">
-													<div class="profile-tab">
-														<div class="custom-tab-1">
-															<ul class="nav nav-tabs">
-																<li class="nav-item"><a href="#my-posts" data-bs-toggle="tab" class="nav-link active show">Posts</a>
-																</li>
-																<li class="nav-item"><a href="#about-me" data-bs-toggle="tab" class="nav-link">About Me</a>
-																</li>
-															</ul>
-															<div class="tab-content">
-																<div id="my-posts" class="tab-pane fade active show">
-																	<div class="my-post-content pt-3">
-																		<div class="post-input">
-																			<textarea name="textarea" id="textarea" cols="30" rows="5" class="form-control bg-transparent" placeholder="Please type what you want...."></textarea> 
-																			<a href="javascript:void(0);" class="btn btn-primary light me-1 px-3" data-bs-toggle="modal" data-bs-target="#linkModal"><i class="fa fa-link m-0"></i> </a>
-																			<!-- Modal -->
-																			<div class="modal fade" id="linkModal">
-																				<div class="modal-dialog modal-dialog-centered" role="document">
-																					<div class="modal-content">
-																						<div class="modal-header">
-																							<h5 class="modal-title">Social Links</h5>
-																							<button type="button" class="btn-close" data-bs-dismiss="modal">
-																							</button>
-																						</div>
-																						<div class="modal-body">
-																							<a class="btn-social facebook" href="javascript:void(0)"><i class="fab fa-facebook-f"></i></a>
-																							<a class="btn-social google-plus" href="javascript:void(0)"><i class="fab fa-google-plus-g"></i></a>
-																							<a class="btn-social linkedin" href="javascript:void(0)"><i class="fab fa-linkedin"></i></a>
-																							<a class="btn-social instagram" href="javascript:void(0)"><i class="fab fa-instagram"></i></a>
-																							<a class="btn-social twitter" href="javascript:void(0)"><i class="fab fa-twitter"></i></a>
-																							<a class="btn-social youtube" href="javascript:void(0)"><i class="fab fa-youtube"></i></a>
-																							<a class="btn-social whatsapp" href="javascript:void(0)"><i class="fab fa-whatsapp"></i></a>
-																						</div>
-																					</div>
-																				</div>
-																			</div>
-																			<a href="javascript:void(0);" class="btn btn-primary light me-1 px-3" data-bs-toggle="modal" data-bs-target="#cameraModal"><i class="fa fa-camera m-0"></i> </a>
-																			<!-- Modal -->
-																			<a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postModal">Post</a>
-																			<!-- Modal -->
-																		</div>
-																		<div class="profile-uoloaded-post border-bottom-1 pb-5">
-																			<img src="images/profile/8.jpg" alt="" class="img-fluid w-100 rounded">
-																			<a class="post-title" href="post-details.html"><h3 class="text-black">Collection of textile samples lay spread</h3></a>
-																			<p>A wonderful serenity has take possession of my entire soul like these sweet morning of spare which enjoy whole heart.A wonderful serenity has take possession of my entire soul like these sweet morning
-																				of spare which enjoy whole heart.</p>
-																			<button class="btn btn-primary me-2"><span class="me-2"><i class="fa fa-heart"></i></span>Like</button>
-																			<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#replyModal"><span class="me-2"><i class="fa fa-reply"></i></span>Reply</button>
-																		</div>
-																		<div class="profile-uoloaded-post border-bottom-1 pb-5">
-																			<img src="images/profile/9.jpg" alt="" class="img-fluid w-100 rounded">
-																			<a class="post-title" href="post-details.html"><h3 class="text-black">Collection of textile samples lay spread</h3></a>
-																			<p>A wonderful serenity has take possession of my entire soul like these sweet morning of spare which enjoy whole heart.A wonderful serenity has take possession of my entire soul like these sweet morning
-																				of spare which enjoy whole heart.</p>
-																			<button class="btn btn-primary me-2"><span class="me-2"><i class="fa fa-heart"></i></span>Like</button>
-																			<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#replyModal"><span class="me-2"><i class="fa fa-reply"></i></span>Reply</button>
-																		</div>
-																		<div class="profile-uoloaded-post pb-3">
-																			<img src="images/profile/8.jpg" alt="" class="img-fluid w-100 rounded">
-																			<a class="post-title" href="post-details.html"><h3 class="text-black">Collection of textile samples lay spread</h3></a>
-																			<p>A wonderful serenity has take possession of my entire soul like these sweet morning of spare which enjoy whole heart.A wonderful serenity has take possession of my entire soul like these sweet morning
-																				of spare which enjoy whole heart.</p>
-																			<button class="btn btn-primary me-2"><span class="me-2"><i class="fa fa-heart"></i></span>Like</button>
-																			<button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#replyModal"><span class="me-2"><i class="fa fa-reply"></i></span>Reply</button>
-																		</div>
-																	</div>
-																</div>
-																<div id="about-me" class="tab-pane fade">
-																	<div class="profile-about-me">
-																		<div class="pt-4 border-bottom-1 pb-3">
-																			<h4 class="text-primary">About Me</h4>
-																			<p class="mb-2">A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence was created for the bliss of souls like mine.I am so happy, my dear friend, so absorbed in the exquisite sense of mere tranquil existence, that I neglect my talents.</p>
-																			<p>A collection of textile samples lay spread out on the table - Samsa was a travelling salesman - and above it there hung a picture that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame.</p>
-																		</div>
-																	</div>
-																	<div class="profile-skills mb-5">
-																		<h4 class="text-primary mb-2">Skills</h4>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Admin</a>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Dashboard</a>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Photoshop</a>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Bootstrap</a>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Responsive</a>
-																		<a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Crypto</a>
-																	</div>
-																	<div class="profile-lang  mb-5">
-																		<h4 class="text-primary mb-2">Language</h4>
-																		<a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-us"></i> English</a> 
-																		<a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-fr"></i> French</a>
-																		<a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-bd"></i> Bangla</a>
-																	</div>
-																	<div class="profile-personal-info">
-																		<h4 class="text-primary mb-4">Personal Information</h4>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Name <span class="pull-end">:</span>
-																				</h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>Mitchell C.Shay</span>
-																			</div>
-																		</div>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Email <span class="pull-end">:</span>
-																				</h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>example@examplel.com</span>
-																			</div>
-																		</div>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Availability <span class="pull-end">:</span></h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>Full Time (Free Lancer)</span>
-																			</div>
-																		</div>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Age <span class="pull-end">:</span>
-																				</h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>27</span>
-																			</div>
-																		</div>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Location <span class="pull-end">:</span></h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>Rosemont Avenue Melbourne,
-																					Florida</span>
-																			</div>
-																		</div>
-																		<div class="row mb-2">
-																			<div class="col-sm-3 col-5">
-																				<h5 class="f-w-500">Year Experience <span class="pull-end">:</span></h5>
-																			</div>
-																			<div class="col-sm-9 col-7"><span>07 Year Experiences</span>
-																			</div>
-																		</div>
-																	</div>
-																</div>
-															</div>
-														</div>
-														<!-- Modal -->
-														<div class="modal fade" id="replyModal">
-															<div class="modal-dialog modal-dialog-centered" role="document">
-																<div class="modal-content">
-																	<div class="modal-header">
-																		<h5 class="modal-title">Post Reply</h5>
-																		<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-																	</div>
-																	<div class="modal-body">
-																		<form>
-																			<textarea class="form-control" rows="4">Message</textarea>
-																		</form>
-																	</div>
-																	<div class="modal-footer">
-																		<button type="button" class="btn btn-danger light" data-bs-dismiss="modal">btn-close</button>
-																		<button type="button" class="btn btn-primary">Reply</button>
-																	</div>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-								</div>
-						  </div>
-						</div>
-					</div>
+					
 					
 					<div class="col-xl-4">
 						<div class="card">
@@ -585,7 +325,8 @@
 								<h4 class="card-title">Check Article</h4>
 							</div>
 							<div class="card-body">
-								{% if article %}
+							{% if task.submission_status != 'submitted' %}
+								{% if article  %}
 								<a href="#previewArticleModalToggle" data-bs-toggle="modal" class="btn btn-danger mb-4 mt-4">Preview Article Text</a>
 
 								<div class="modal fade" id="previewArticleModalToggle" tabindex="-1" aria-labelledby="previewArticleModalLabel" aria-hidden="true">
@@ -601,6 +342,25 @@
 													{% for section in article.article_sections.all %}
 													<h4 class="mb-3"> {{section.section_title}} </h4>
 													<p class="mb-2"> {{section.section_text}} </p>
+													<p class="mb-0">By {{section.journalist.user.first_name}} {{section.journalist.user.last_name}} </p>
+													{% if section.submission_status == 'submitted' %}													
+													<p class="mb-0">Status - {{section.submission_status}}</p>
+													<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+														REJECT
+													</div>
+													<div class="dropdown-menu dropdown-menu-left">
+													<form method="post">
+													{% csrf_token %}
+														<input type="hidden" value="{{section.id}}" name="section-id">
+														<textarea required class="form-control" name="reason" rows="2" placeholder="reason"></textarea>
+														<button class="btn btn-danger" type="submit" name="reject">Reject Article</button>
+
+													</form>
+													</div>												
+													{% else %}
+													<p class="mb-2">Status - {{section.submission_status}}</p>
+													{% endif %}
+													<hr>
 													<hr>
 													
 													{% endfor %}
@@ -614,18 +374,74 @@
 									</div>
 								</div>
 
-
-
-
 								{% else %}
 								<h4>No articles Created at the moment</h4>
 								{% endif %}
 
 								{% if photo_gallery %}
-								<a href="javascript:void(0);" class="btn btn-success mb-4 mt-4">Preview Images</a>
+								<a href="#previewGalleryModalToggle" data-bs-toggle="modal" class="btn btn-danger mb-4 mt-4">Preview Article Gallery</a>
+								<div class="modal fade" id="previewGalleryModalToggle" tabindex="-1" aria-labelledby="previewArticleModalLabel" aria-hidden="true">
+									<div class="modal-dialog modal-lg">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="composeModalToggleLabel">Preview {{task.title}} Gallery</h5>
+												<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+											</div>
+											<div class="modal-body">
+												<div class="col-lg-12 p-2">
+
+													{% if photo_gallery.images.all %}
+													<div class="row">
+													{% for image in photo_gallery.images.all %}
+													{% if image.image  %}													
+														<div class="col-md-6 h-50">
+															<img class="img-fluid" src="{{image.image.url}}" alt="">
+														</div>
+													{% endif %}
+													{% endfor %}
+													</div>
+													<hr>
+													
+													{% if photo_gallery.submission_status == 'submitted' %}													
+													<p class="mb-0">Status - {{photo_gallery.submission_status}}</p>
+													<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+														REJECT
+													</div>
+													<div class="dropdown-menu dropdown-menu-left">
+													<form method="post">
+													{% csrf_token %}
+														<input type="hidden" value="{{photo_gallery.id}}" name="photo_gallery-id">
+														<textarea required class="form-control" name="reason" rows="2" placeholder="reason"></textarea>
+														<button class="btn btn-danger" type="submit" name='reject'>Reject Gallery</button>
+
+													</form>
+													</div>												
+													{% else %}
+													<p class="mb-2">Status - {{photo_gallery.submission_status}}</p>
+													{% endif %}
+													{% else %}
+
+													<h2>No images uploaded yet</h2>
+													{% endif %}
+													
+												</div>
+											</div>
+
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+											</div>
+									</div>
+									</div>
+								</div>
 								{% else %}
 								<h4>No images added to this Task at the moment</h4>
 								{% endif %}
+							
+							{% else %}
+							<h4>Task Approved and submitted awaiting Publication</h4>
+							<a href="{% url 'blog-preview' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">Preview Blog</a>
+							{% endif %}
+								
 								
 								
 							</div>
@@ -751,7 +567,14 @@
     ***********************************-->
 	{% include 'workflow-scripts.html' %}
 	{% block workflow-scripts-section %}
-	{% endblock %}	
+	{% endblock %}
+	
+	<script>
+	function populateEditInstructionModal(id, name){
+		document.getElementById("editInstructionModalToggleLabel").innerHTML = "Edit " + name + "'s Instruction";
+		document.getElementsByName('journalist-id')[0].value=id;
+	}
+	</script>	
 	
 	
 	

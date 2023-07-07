@@ -202,22 +202,23 @@
 																							</button>
 																						</div>
 																						<div class="modal-body">
-
-																							<fieldset class="rounded">
-																								<legend>Description:</legend>
-																								<p>{{task.description}}</p>
-																							</fieldset>
 																							<div class="basic-list-group">
 																								<ul class="list-group list-group-flush">
 																									<li class="list-group-item">Project - {{ task.project.title }}</li>
-																									{% if task.status == "complete" %}
-																									<li class="list-group-item list-group-item-success">Task Complete</li>
+																									<li class="list-group-item">deadline - {{ task.deadline }}</li>
+																									{% if task.status == "completed" or task.status == "approved" %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
+																									<li class="list-group-item list-group-item-success">Submission status - {{ task.submission_status }}</li>
+																									<li class="list-group-item list-group-item-info">Submitted with - {{ task.deadline|timeuntil:task.end_date_time }} to go</li>
 																									{% else %}
 																										{% if task.remaining_days < 3 %}
+																									<li class="list-group-item list-group-item-warning">status - {{ task.status }}</li>
 																									<li class="list-group-item list-group-item-warning">{{ task.remaining_days }} days remaining</li>
 																										{% elif task.remaining_days <= 1 %}
+																									<li class="list-group-item list-group-item-danger">status - {{ task.status }}</li>
 																									<li class="list-group-item list-group-item-danger">{{ task.remaining_days }} day(s) remaining</li>
 																										{% else %}
+																									<li class="list-group-item list-group-item-success">status - {{ task.status }}</li>
 																									<li class="list-group-item list-group-item-success">{{ task.remaining_days }} days remaining</li>
 																										{% endif %}
 																									{% endif %}
@@ -233,8 +234,16 @@
 																		
 																		</td>
 																		<td>
-																		{% if task.submision_status == 'submitted' %}
+																		
+																		{% if task.submission_status == 'submitted' %}
+																			{% if task.status == 'approved' %}
+																			<span class="text text-success">Published</span>
+																			<a href="{% url 'blog' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">View</a>
+																			{% else %}
 																			<span class="text text-success">Awaiting Publication</span>
+																			<a href="{% url 'blog-preview' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">Preview</a>
+
+																			{% endif %}																			
 																		{% else %}
 																			<span class="text text-warning">Awaiting Approval</span>
 																		{% endif %}

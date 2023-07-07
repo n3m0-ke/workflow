@@ -14,6 +14,61 @@
 	{% block workflow-styles-section %}
 	{% endblock %}
 	<link href="{% static 'workflow-static/vendor/lightgallery/css/lightgallery.min.css' %}" rel="stylesheet">
+	<style type="text/css">
+        .detail-bg {
+            border-radius: 10px;
+            padding: 9px;
+            background-color: black;
+            opacity: 0.8;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+        .drag-area{
+            border: 2px dashed #fff;
+            height: 100%;
+            width: 100%;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 5%;
+            margin-bottom: 10%;
+        }
+        .drag-area.active{
+            border: 2px solid #fff;
+        }
+        .drag-area .icon{
+            font-size: 75px;
+        }
+        .drag-area span{
+            font-size: 25px;
+            font-weight: 500;
+            color: Black;
+            margin: 10px 0 15px 0;
+        }
+        .drag-area img{
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .input-bw{
+            color: white;
+            background-color: black;
+            border: 2px solid #fff;
+        }
+
+        canvas {
+            border: white 1px solid;
+            border-radius: 50%;
+        }
+
+
+        
+        
+    </style>
 
 </head>
 <body>
@@ -54,43 +109,182 @@
 				</div>
 				<div class="d-flex flex-wrap d-review justify-content-between">
 					<div class="d-flex align-items-center flex-wrap">
-						<a href="javascript:void(0);" class="btn btn-danger mb-4">REVERT CHANGES</a>
-						<a href="javascript:void(0);" class="btn btn-success ms-3 mb-4">SUBMIT</a>
 						<div class="dropdown ms-3 d-inline-block mb-4">
-							<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-								<i class="flaticon-381-controls-3 me-2"></i> Check instructions
+							<div class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" >
+								{% if altered_instructions %}
+								<i class="text-danger fa fa-exclamation-triangle" id="altered-instruction-indicator"></i>
+								{% endif %}								
+								Check instructions								
 							</div>
 							<div class="dropdown-menu dropdown-menu-left">
-								<a class="dropdown-item" href="javascript:void(0);">Instruction one</a>
-								<a class="dropdown-item" href="javascript:void(0);">Instruction two</a>
-								<a class="dropdown-item" href="javascript:void(0);">Instruction three</a>
+								{% for instruction in instructions %}
+									<a class="dropdown-item" href="javascript:void(0);">{{instruction.instruction}}</a>
+								{% endfor %}
 							</div>
 						</div>
+						{% if photo_gallery.submission_status == 'rejected' %}
+						<div class="dropdown ms-3 d-inline-block mb-4">
+							<div class="btn btn-outline-primary dropdown-toggle bg-danger" data-bs-toggle="dropdown" >							
+								<i class="text-danger fa fa-exclamation-triangle" id="altered-instruction-indicator"></i> Rejected Check Reason								
+							</div>
+							<div class="dropdown-menu dropdown-menu-left">
+								{{rejection.reason}}
+							</div>
+						</div>						
+						{% endif %}
 					</div>
                 </div>
 
+				{% comment %} <h4>Added photos</h4>
+				<div class="card-body pb-1">
+					<div id="lightgallery" class="row">
+						{% if images_exist %}
+						{% for image in images %}
+						<a href="{{image.url}}" data-exthumbimage="{{image.url}}" data-src="{{image.url}}" class="col-lg-3 col-md-6 mb-4">
+							<img src="{{image.url}}" alt="" style="width:100%;"/>
+						</a>
+						{% endfor %}
+						{% else %}
+						<h1>No Images Uploaded Yet</h1>
+						{% endif %}
+					</div>
+				</div> {% endcomment %}
+
+				<hr>
+
 				<div class="row ">
 					<div class="col-md-8">
-						<h4>Added photos</h4>
-						<div class="card-body pb-1">
-							<div id="lightgallery" class="row">
-								<a href="images/big/img1.jpg" data-exthumbimage="images/big/img1.jpg" data-src="images/big/img1.jpg" class="col-lg-3 col-md-6 mb-4">
-									<img src="images/big/img1.jpg" alt="" style="width:100%;"/>
-								</a>
-								<a href="images/big/img2.jpg" data-exthumbimage="images/big/img2.jpg" data-src="images/big/img2.jpg" class="col-lg-3 col-md-6 mb-4">
-									<img src="images/big/img2.jpg" alt="" style="width:100%;" />
-								</a>
-								<a href="images/big/img3.jpg" data-exthumbimage="images/big/img3.jpg" data-src="images/big/img3.jpg" class="col-lg-3 col-md-6 mb-4">
-									<img src="images/big/img3.jpg" alt="" style="width:100%;" />
-								</a>
-							</div>
-						</div>
 
-						<hr>
-						<form>
-							<h4>Add more photos</h4>
-							<input type="file" class="form-file-input form-control mb-5">
-							<button class="btn btn-primary" type="submit">Save</button>
+						{% if photo_gallery_sub_errors %}
+							{% for error in photo_gallery_sub_errors %}
+						<div class="alert alert-warning alert-dismissible fade show" role="alert">
+							<strong>Error!</strong> {{ error }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div> 
+							{% endfor %}
+						{% endif %}
+
+						{% if photo_gallery_sub_messages %}
+							{% for message in photo_gallery_sub_messages %}
+						<div class="alert alert-success alert-dismissible fade show" role="alert">
+							<strong>Success!</strong> {{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div> 
+							{% endfor %}
+						{% endif %}
+						
+						<form method="post" id="section-form" enctype="multipart/form-data"> 
+							{% comment %} <h4>Title Details</h4> {% endcomment %}
+							{% comment %} <hr> {% endcomment %}
+							{% comment %} <label>Proposed title:</label> {% endcomment %}
+							<input type="hidden" name="proposed-title-subtext-id" value="{{proposed_title_subtext.id}}">
+							<input type="hidden" name="photo_gallery-id" value="{{photo_gallery.id}}">
+							
+							<!-- <div class="mb-3">
+								<input class="form-control" type="text" name="proposed-title" value="{{proposed_title_subtext.title}}" maxlength="30" placeholder="Proposed Article Title">
+							</div>
+							<label>Proposed subtext:</label>
+							<div class="mb-3">
+								<input class="form-control" type="text" name="proposed-subtext" value="{{proposed_title_subtext.subtext}}" maxlength="70" placeholder="Proposed SubText">
+							</div>-->
+							<h4>Gallery Details</h4>
+							<hr>
+							<label>Proposed Gallery title:</label>
+							<div class="mb-3">
+								<input class="form-control" type="text" required name="proposed-photo_gallery-title" {% if photo_gallery.title %} value="{{photo_gallery.title}}" {% endif %}   maxlength="30" placeholder="Proposed Gallery Title">
+							</div>
+							<div class="container row">
+								<div class="col-md-4">
+									<div class="upload-files-container mt-2">
+										{% if image_1 and image_1.image %}
+										<img class="img-fluid" src="{{image_1.image.url}}" alt="">
+										<input class="form-control input-lg" type="file" name="image-1" accept="image/*" value="{{image_1.image.url}}">
+										{% else %}
+										<input class="form-control input-lg" type="file" name="image-1" accept="image/*"/>					
+										{% endif %}	
+										
+										
+										{% comment %} <div class="drag-area" id="drag-area-1">
+											{% if image_1 and image_1.image %}
+											<img src="{{image_1.image.url}}" alt="">
+											<input type="file" required id="file-upload" name="image-1" hidden value="{{ image_1.image.url }}">
+											{% else %}
+											<div class="icon text text-primary">
+												<i class="fas fa-cloud-upload-alt"></i>
+											</div>
+											<center>
+												<header class="h5">Drag & Drop to Upload Image</header>
+											</center>                                                     
+											<span>OR</span>
+											<button class="btn btn-outline-primary upload-button" type="button">Browse Image</button>
+											<input type="file" required id="file-upload" name="image-1" hidden >	
+										</div> {% endcomment %}
+																			
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="upload-files-container mt-2">
+										{% if image_2 and image_2.image %}
+										<img class="img-fluid" src="{{image_2.image.url}}" alt="">
+										<input class="form-control input-lg" type="file" name="image-2" accept="image/*" value="{{ image_2.image.url }}">
+										{% else %}
+										<input class="form-control input-lg" type="file" name="image-2" accept="image/*"/>					
+										{% endif %}	
+										
+										{% comment %} <div class="drag-area" id="drag-area-2">
+											{% if image_2 and image_2.image %}
+											<img src="{% url 'image_2.image.url' %}" alt="">
+											<input type="file" id="file-upload-2" name="image-2" hidden  value="{{ image_2.image.url }}">
+											{% else %}
+											<div class="icon  text text-primary">
+												<i class="fas fa-cloud-upload-alt"></i>
+											</div>
+											<center>
+												<header class="h5">Drag & Drop to Upload Image</header>
+											</center>                                                     
+											<span>OR</span>
+											<button class="btn btn-outline-primary upload-button" type="button">Browse Image</button>
+											<input type="file" id="file-upload-2" name="image-2" hidden>											
+											{% endif %}
+										</div> {% endcomment %}
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="upload-files-container mt-2">
+										{% if image_3 and image_3.image %}
+										<img class="img-fluid" src="{{image_3.image.url}}" alt="">
+										<input class="form-control input-lg" type="file" name="image-3" accept="image/*" value="{% url image_3.image.url %}">
+										{% else %}
+										<input class="form-control input-lg" type="file" name="image-3" accept="image/*"/>					
+										{% endif %}
+										
+										{% comment %} <div class="drag-area" id="drag-area-3">
+											{% if image_3 and image_3.image %}
+											<img src="{% url 'image_3.image.url' %}" alt="">
+											<input type="file" id="file-upload-3" name="image-3" hidden value="{{ image_3.image.url }}">
+											{% else %}
+											<div class="icon  text text-primary">
+												<i class="fas fa-cloud-upload-alt"></i>
+											</div>
+											<center>
+												<header class="h5">Drag & Drop to Upload Image</header>
+											</center>                                                     
+											<span>OR</span>
+											<button class="btn btn-outline-primary upload-button" type="button">Browse Image</button>
+											<input type="file" id="file-upload-3" name="image-3"  hidden>
+											{% endif %}
+										</div> {% endcomment %}
+									</div>
+								</div>
+							</div>
+							<hr>
+							{% csrf_token %}
+							{% if photo_gallery.submission_status == 'submitted' %}
+								<a href="#" class="btn btn-primary">Preview</a>
+							{% else %}
+								<button class="btn btn-primary" name="action" value="save" type="submit">Save and Continue later</button>
+								<button class="btn btn-success" name="action" value="submit" type="submit">Submit as final Copy</button>
+							{% endif %}
 						</form>						
 					</div>
 
@@ -101,56 +295,65 @@
 							</div>
 							<div class="card-body">
 								<div id="DZ_W_TimeLine11" class="widget-timeline dz-scroll style-1 height370">
+									{% if task_notifications %}
 									<ul class="timeline">
+
+										{% for notification in task_notifications %}
+
+										{% if notification.type == 'info' %}
+										<li>
+											<div class="timeline-badge info"></div>
+											<a class="timeline-panel text-muted" href="#">
+												<span> {{notification.creation_time|timesince}} ago</span>
+												<h6 class="mb-0">{{notification.message}}</h6>
+											</a>
+										</li>										
+										{% elif notification.type == 'danger' %}
+										<li>
+											<div class="timeline-badge danger"></div>
+											<a class="timeline-panel text-muted" href="#">
+												{% comment %} <span>{{notification.creation_time|timesince}} ago</span> {% endcomment %}
+												<h6 class="mb-0">{{notification.message}}</h6>
+											</a>
+										</li>
+
+										{% elif notification.type == 'warning' %}
+										<li>
+											<div class="timeline-badge warining"></div>
+											<a class="timeline-panel text-muted" href="#">
+												{% comment %} <span>{{notification.creation_time|timesince}} ago</span> {% endcomment %}
+												<h6 class="mb-0">{{notification.message}}</h6>
+											</a>
+										</li>
+
+										{% elif notification.type == 'success' %}
+										<li>
+											<div class="timeline-badge success"></div>
+											<a class="timeline-panel text-muted" href="#">
+												{% comment %} <span>{{notification.creation_time|timesince}} ago</span> {% endcomment %}
+												<h6 class="mb-0">{{notification.message}}</h6>
+											</a>
+										</li>
+										
+										{% else %}
 										<li>
 											<div class="timeline-badge primary"></div>
 											<a class="timeline-panel text-muted" href="#">
-												<span>10 minutes ago</span>
-												<h6 class="mb-0"><strong class="text-primary">Photo Journalist</strong>. Added two images to this article </h6>
+												{% comment %} <span>{{notification.creation_time|timesince}} ago</span> {% endcomment %}
+												<h6 class="mb-0">{{notification.message}}</h6>
 											</a>
 										</li>
-										<li>
-											<div class="timeline-badge info">
-											</div>
-											<a class="timeline-panel text-muted" href="#">
-												<span>20 minutes ago</span>
-												<h6 class="mb-0">New instruction added by <strong class="text-info">Editor.</strong></h6>
-												<p class="mb-0">Instruction details to do something</p>
-											</a>
-										</li>
-										<li>
-											<div class="timeline-badge danger">
-											</div>
-											<a class="timeline-panel text-muted" href="#">
-												<span>30 minutes ago</span>
-												<h6 class="mb-0">Message on this particular article <strong class="text-warning">Journalist</strong></h6>
-											</a>
-										</li>
-										<li>
-											<div class="timeline-badge success">
-											</div>
-											<a class="timeline-panel text-muted" href="#">
-												<span>15 minutes ago</span>
-												<h6 class="mb-0">Editor pushed the deadline for milestone.</h6>
-											</a>
-										</li>
-										<li>
-											<div class="timeline-badge warning">
-											</div>
-											<a class="timeline-panel text-muted" href="#">
-												<span>20 minutes ago</span>
-												<h6 class="mb-0">Editor pushed the deadline for milestone.</h6>
-											</a>
-										</li>
-										<li>
-											<div class="timeline-badge dark">
-											</div>
-											<a class="timeline-panel text-muted" href="#">
-												<span>20 minutes ago</span>
-												<h6 class="mb-0">Editor pushed the deadline for milestone.</h6>
-											</a>
-										</li>
+
+
+										{% endif %}
+										
+										{% endfor %}
 									</ul>
+									{% else %}
+
+									There are no Notifications for this task as of yet
+
+									{% endif %}
 								</div>
 								<div class="input-group mt-3">
 									<textarea class="form-control" placeholder="Type your message..."></textarea>
@@ -162,14 +365,7 @@
 						</div>
 					</div>
 				</div>
-
-				
-				
-
-				
 			</div>
-
-			
         </div>
         <!--**********************************
             Content body end
@@ -211,6 +407,217 @@
 	<script src="{% static 'workflow-static/vendor/lightgallery/js/lightgallery-all.min.js' %}"></script>
 	<!-- All init script -->
     <script src="{% static 'workflow-static/js/plugins-init/toastr-init.js' %}"></script>
+
+	<script >
+
+	$('#main-wrapper').toggleClass("menu-toggle");
+
+	$(".hamburger").toggleClass("is-active");
+	</script>
+
+	{% if photo_gallery.submission_status == 'submitted'  %}
+	<script >
+	// Get the form element by its ID
+	console.log("in script")
+	var form = document.querySelector('form');
+
+	// Get all input and textarea elements within the form
+	var formInputs = form.querySelectorAll('input, textarea');
+
+	// Disable each input field and textarea
+	formInputs.forEach(function(input) {
+		input.disabled = true;
+	});
+
+	</script>
+	{% else %}
+	{% endif %}
+	
+	
+	<script type="text/javascript">
+		//selecting all required elements
+		const dropArea = document.querySelector(".drag-area"),
+		dragText = dropArea.querySelector("header"),
+		button = dropArea.querySelector(".upload-button"),
+		input = dropArea.querySelector("#file-upload");
+		let file; //this is a global variable and we'll use it inside multiple functions
+
+		button.onclick = ()=>{
+		console.log("Button clicked!");
+		input.click(); //if user click on the button then the input also clicked
+		}
+
+		input.addEventListener("change", function(){
+		//getting user select file and [0] this means if user select multiple files then we'll select only the first one
+		file = this.files[0];
+		dropArea.classList.add("active");
+		showFile(); //calling function
+		});
+
+
+		//If user Drag File Over DropArea
+		dropArea.addEventListener("dragover", (event)=>{
+		event.preventDefault(); //preventing from default behaviour
+		dropArea.classList.add("active");
+		dragText.textContent = "Release to Upload File";
+		});
+
+		//If user leave dragged File from DropArea
+		dropArea.addEventListener("dragleave", ()=>{
+		dropArea.classList.remove("active");
+		dragText.textContent = "Drag & Drop to Upload File";
+		});
+
+		//If user drop File on DropArea
+		dropArea.addEventListener("drop", (event)=>{
+		event.preventDefault(); //preventing from default behaviour
+		//getting user select file and [0] this means if user select multiple files then we'll select only the first one
+		file = event.dataTransfer.files[0];
+		showFile(); //calling function
+		});
+
+		function showFile(){
+		let fileType = file.type; //getting selected file type
+		let validExtensions = ["image/jpeg", "image/jpg", "image/png"]; //adding some valid image extensions in array
+		if(validExtensions.includes(fileType)){ //if user selected file is an image file
+			let fileReader = new FileReader(); //creating new FileReader object
+			fileReader.onload = ()=>{
+			let fileURL = fileReader.result; //passing user file source in fileURL variable
+			let imgTag = `<img src="${fileURL}" alt="">`; //creating an img tag and passing user selected file source inside src attribute
+			dropArea.innerHTML = imgTag; //adding that created img tag inside dropArea container
+		}
+		fileReader.readAsDataURL(file);
+		}else{
+			alert("This is not an Image File!");
+			dropArea.classList.remove("active");
+			dragText.textContent = "Drag & Drop to Upload File";
+		}
+		}
+	</script>
+
+<script type="text/javascript">
+
+    //selecting all required elements
+    const dropArea2 = document.querySelector("#drag-area-2"),
+    dragText2 = dropArea2.querySelector("header"),
+    button2 = dropArea2.querySelector(".upload-button"),
+    input2 = dropArea2.querySelector("#file-upload-2");
+    let file2; //this is a global variable and we'll use it inside multiple functions
+
+    button2.onclick = ()=>{
+      console.log("Button2 clicked!");
+      input2.click(); //if user click on the button2 then the input2 also clicked
+    }
+
+    input2.addEventListener("change", function(){
+      //getting user select file2 and [0] this means if user select multiple files then we'll select only the first one
+      file2 = this.files[0];
+      dropArea2.classList.add("active");
+      showFile2(); //calling function
+    });
+
+
+    //If user Drag File Over DropArea2
+    dropArea2.addEventListener("dragover", (event)=>{
+      event.preventDefault(); //preventing from default behaviour
+      dropArea2.classList.add("active");
+      dragText2.textContent = "Release to Upload File";
+    });
+
+    //If user leave dragged File from DropArea2
+    dropArea2.addEventListener("dragleave", ()=>{
+      dropArea2.classList.remove("active");
+      dragText2.textContent = "Drag & Drop to Upload File";
+    });
+
+    //If user drop File on DropArea2
+    dropArea2.addEventListener("drop", (event)=>{
+      event.preventDefault(); //preventing from default behaviour
+      //getting user select file and [0] this means if user select multiple files then we'll select only the first one
+      file2 = event.dataTransfer.files[0];
+      showFile2(); //calling function
+    });
+
+    function showFile2(){
+      let fileType = file2.type; //getting selected file type
+      let validExtensions = ["image/jpeg", "image/jpg", "image/png"]; //adding some valid image extensions in array
+      if(validExtensions.includes(fileType)){ //if user selected file is an image file
+        let fileReader = new FileReader(); //creating new FileReader object
+        fileReader.onload = ()=>{
+          let fileURL = fileReader.result; //passing user file source in fileURL variable
+          let imgTag = `<img src="${fileURL}" alt="">`; //creating an img tag and passing user selected file source inside src attribute
+          dropArea2.innerHTML = imgTag; //adding that created img tag inside dropArea2 container
+      }
+      fileReader.readAsDataURL(file2);
+    }else{
+        alert("This is not an Image File!");
+        dropArea2.classList.remove("active");
+        dragText2.textContent = "Drag & Drop to Upload File";
+    }
+    }
+</script>
+
+<script type="text/javascript">
+
+    //selecting all required elements
+    const dropArea3 = document.querySelector("#drag-area-3"),
+    dragText3 = dropArea3.querySelector("header"),
+    button3 = dropArea3.querySelector(".upload-button"),
+    input3 = dropArea3.querySelector("#file-upload-3");
+    let file3; //this is a global variable and we'll use it inside multiple functions
+
+    button3.onclick = ()=>{
+      console.log("Button2 clicked!");
+      input3.click(); //if user click on the button2 then the input2 also clicked
+    }
+
+    input3.addEventListener("change", function(){
+      //getting user select file2 and [0] this means if user select multiple files then we'll select only the first one
+      file3 = this.files[0];
+      dropArea3.classList.add("active");
+      showFile3(); //calling function
+    });
+
+
+    //If user Drag File Over DropArea2
+    dropArea3.addEventListener("dragover", (event)=>{
+      event.preventDefault(); //preventing from default behaviour
+      dropArea3.classList.add("active");
+      dragText3.textContent = "Release to Upload File";
+    });
+
+    //If user leave dragged File from DropArea2
+    dropArea3.addEventListener("dragleave", ()=>{
+      dropArea3.classList.remove("active");
+      dragText3.textContent = "Drag & Drop to Upload File";
+    });
+
+    //If user drop File on DropArea2
+    dropArea3.addEventListener("drop", (event)=>{
+      event.preventDefault(); //preventing from default behaviour
+      //getting user select file and [0] this means if user select multiple files then we'll select only the first one
+      file3 = event.dataTransfer.files[0];
+      showFile3(); //calling function
+    });
+
+    function showFile3(){
+      let fileType = file3.type; //getting selected file type
+      let validExtensions = ["image/jpeg", "image/jpg", "image/png"]; //adding some valid image extensions in array
+      if(validExtensions.includes(fileType)){ //if user selected file is an image file
+        let fileReader = new FileReader(); //creating new FileReader object
+        fileReader.onload = ()=>{
+          let fileURL = fileReader.result; //passing user file source in fileURL variable
+          let imgTag = `<img src="${fileURL}" alt="">`; //creating an img tag and passing user selected file source inside src attribute
+          dropArea3.innerHTML = imgTag; //adding that created img tag inside dropArea2 container
+      }
+      fileReader.readAsDataURL(file3);
+    }else{
+        alert("This is not an Image File!");
+        dropArea3.classList.remove("active");
+        dragText3.textContent = "Drag & Drop to Upload File";
+    }
+    }
+</script>
 	
 	
 	

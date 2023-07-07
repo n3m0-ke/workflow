@@ -151,7 +151,7 @@
 
 														{% if project_table_errors %}
 															{% for error in project_table_errors %}
-														<div class="alert alert-success alert-dismissible fade show" role="alert">
+														<div class="alert alert-danger alert-dismissible fade show" role="alert">
 															<strong>Error!</strong> {{ error }}
 															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 														</div>
@@ -161,13 +161,14 @@
 															<table class="table table-responsive-md" id="projects-table">
 																<thead>
 																	<tr>
-																		<th style="width:80px;"><strong>#</strong></th>
-																		<th><strong>Title</strong></th>
-																		<th><strong>Status</strong></th>																		
-																		<th><strong>Date Created</strong></th>
-																		<th><strong>No. of Tasks</strong></th>																		
-																		<th><strong>Other Details</strong></th>
-																		<th><strong>Action</strong></th>
+																		<th style="width:40px;"><strong>#</strong></th>
+																		<th style="width:40px;"><strong>Title</strong></th>
+																		<th style="width:40px;"><strong>Status</strong></th>																		
+																		<th style="width:40px;"><strong>Date Created</strong></th>
+																		<th style="width:40px;"><strong>No. of Tasks</strong></th>																		
+																		<th style="width:40px;"><strong>Other Details</strong></th>
+																		<th style="width:40px;"><strong>Activate/Deactivate</strong></th>
+																		<th style="width:40px;"><strong>Edit</strong></th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -175,9 +176,9 @@
 																	{% if projects %}
 																	{% for project in projects %}
 																	<tr>
-																		<td><strong>{{project.id}}</strong></td>
-																		<td>{{project.title}}</td>
-																		<td>
+																		<td style="width:40px;"><strong>{{project.id}}</strong></td>
+																		<td style="width:40px;">{{project.title}}</td>
+																		<td style="width:40px;">
 																			{% if project.status == 'active' %}
 																			<span class="badge badge-success">{{ project.status }}</span>
 																			{% endif %}
@@ -185,9 +186,9 @@
 																			<span class="badge badge-danger">{{ project.status }}</span>
 																			{% endif %}
 																		</td>
-																		<td>{{ project.date_of_creation }}</td>
-																		<td>{{ project.task_set.count }}</td>
-																		<td>
+																		<td style="width:40px;">{{ project.date_of_creation }}</td>
+																		<td style="width:40px;">{{ project.task_set.count }}</td>
+																		<td style="width:40px;">
 																			<a href="#otherProjectDetails{{project.id}}" data-bs-toggle="modal"  class="btn" id="otherprojectdetails">Other Details</a>
 																			<div class="modal fade" id="otherProjectDetails{{project.id}}" tabindex="-1" aria-labelledby="otherProjectDetails{{project.id}}Label" aria-hidden="true">
 																				<div class="modal-dialog modal-dialog-centered" role="document">
@@ -220,7 +221,7 @@
 																			</div>
 
 																		</td>
-																		<td>
+																		<td style="width:40px;">
 																			{% if project.status == 'active' %}
 																			<form action="" method="post">
 																				{% csrf_token %}
@@ -235,14 +236,71 @@
 																				<button type="submit" class="btn btn-success" name="toggleStatusSub">Activate</button>
 																			</form>
 																			{% endif %}<br>
-																			<button type="submit" class="btn btn-primary" name="toggleStatusSub">Edit Project</button>
+																			
 																		</td>
+																		<td><a href="#editProjectModalToggle" data-bs-toggle="modal" onclick="populateEditProjectModal('{{project.id}}','{{project.title}}','{{project.description}}')" class="btn btn-primary" name="editProjectSub">Edit Project</a></td>
 																		
 																	</tr>
 																	{% endfor %}
 																	{% endif %}																	
 																</tbody>
 															</table>
+
+															<div class="modal fade" id="editProjectModalToggle" tabindex="-1" aria-labelledby="editProjectToggleLabel" aria-hidden="true">
+																<div class="modal-dialog modal-lg">
+																	<div class="modal-content">
+																		<div class="modal-header">
+																			<h5 class="modal-title" id="editProjectModalToggleLabel"></h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																		</div>
+																		<div class="modal-body">
+																			<div class="col-lg-12">
+																				<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																					{% if edit_project_errors %}
+																						{% for error in edit_project_errors %}
+																					<div class="alert alert-success alert-dismissible fade show" role="alert">
+																						<strong>Error!</strong> {{ error }}
+																						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																					</div>
+																						{% endfor %}
+																					{% endif %}
+																					<div class="compose-content">
+																						<div class="basic-form">
+																							<form method="post">
+																								{% csrf_token %}
+																								
+																								<input type="hidden" name="project-id" value="">
+																								<div class="mb-3 row">
+																									<label class="col-sm-3 col-form-label">New Title: </label>
+																									<div class="col-sm-9">
+																										<input type="text" required class="form-control" name="new-project-title" placeholder="Project Title">
+																									</div>
+																								</div>
+																								<div class="mb-3 row">
+																									<label class="col-sm-3 col-form-label">New Description: </label>
+																									<div class="col-sm-9">
+																										<textarea required class="form-control" rows="4" name="new-project-description" id="project-description"></textarea>
+																									</div>
+																								</div>																								
+
+																								<div class="mb-1 mt-2 row">
+																									<div class="col-sm-10">
+																										<button type="submit" class="btn btn-primary">Submit Details</button>
+																										<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																									</div>
+																								</div>
+																							</form>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																		<div class="modal-footer">
+																			<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																		</div>
+																</div>
+																</div>
+															</div>
 														</div>
 													</div>
 												</div>
@@ -298,7 +356,7 @@
 																									<div class="mb-3 row">
 																										<label class="col-sm-3 col-form-label">Title</label>
 																										<div class="col-sm-9">
-																											<input type="text" required class="form-control" name="task-title" placeholder="Task Title">
+																											<input type="text" required class="form-control" name="task-title" placeholder="Task Title" maxlength="30" >
 																										</div>
 																									</div>
 																									<div class="mb-3 row">
@@ -356,7 +414,114 @@
 																	</div>
 																</div>
 
+																<!-- Delete Task Modal -->
+																<div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel" aria-hidden="true">
+																	<div class="modal-dialog">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h1 class="modal-title fs-5" id="deleteTaskModalLabel"></h1>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																			</div>
+																			<div class="modal-body">
+																			This Action is irreversible. Are you sure you want to proceed?
+																			</div>
+																			<div class="modal-footer">
+																				<form method="post">
+																				{% csrf_token %}
+																				<input type="hidden" name="delete-task-id" value="">
 
+																				<button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+																				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cancel</button>
+
+																				</form>
+																				
+																			</div>
+																		</div>
+																	</div>
+																</div>
+
+																<div class="modal fade" id="editTaskModalToggle" tabindex="-1" aria-labelledby="editTaskModalToggleLabel" aria-hidden="true">
+																	<div class="modal-dialog modal-lg">
+																		<div class="modal-content">
+																			<div class="modal-header">
+																				<h5 class="modal-title" id="editTaskModalToggleLabel"></h5>
+																				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+																			</div>
+																			<div class="modal-body">
+																				<div class="col-lg-12">
+																					<div class="email-right-box ms-0 ms-sm-4 ms-sm-0">
+																						<div class="compose-content">
+																							<div class="basic-form">
+																								<form method="post">
+																									{% csrf_token %}
+																									<input type="hidden" name="edit-task-id" value="">
+																									
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">New Title</label>
+																										<div class="col-sm-9">
+																											<input type="text" required class="form-control" name="new-task-title" placeholder="Task Title">
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Description</label>
+																										<div class="col-sm-9">
+																											<textarea required class="form-control" rows="4" name="new-task-description" id="new-task-description"></textarea>
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Project</label>
+																										<div class="col-sm-9">
+																											<select class="form-control wide mb-3" name="new-task-project-id" tabindex="null">
+																												{% for project in projects %}
+																												<option value="{{project.id}}">{{project.title}}</option>
+																												{% endfor %}
+																												
+																											</select>
+																										</div>
+																									</div>																									
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Editor</label>
+																										<div class="col-sm-9">
+																											<select class="form-control wide mb-3" name="new-task-editor-id" tabindex="null">
+																												{% for editor in task_editors %}
+																												<option value="{{editor.id}}">{{editor.user.first_name}} {{editor.user.last_name}}</option>
+																												{% endfor %}
+																											</select>
+																										</div>
+																									</div>
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">Old Deadline</label>
+																										<div class="col-sm-9">
+																											<span id="editTaskDeadline"></span>
+																										</div>
+																									</div>																								
+																									<div class="mb-3 row">
+																										<label class="col-sm-3 col-form-label">New Deadline</label>
+																										<div class="col-sm-4">
+																											<input type="date" class="form-control" name="new-task-enddate" id="new-task-enddate">
+																										</div>
+																										<div class="col-sm-4">
+																											<input type="time" class="form-control" min="08:00" max="17:00" step="3600" name="new-task-endtime" >
+																										</div>
+																									</div>
+																									<div class="mb-1 row">
+																										<div class="col-sm-10">
+																											<button type="submit" class="btn btn-primary">Submit Details</button>
+																											<button type="reset" class="btn btn-warning" data-bs-dismiss="modal">Reset and close</button>
+																										</div>
+																									</div>
+																								</form>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																			<div class="modal-footer">
+																				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																			</div>
+																	</div>
+																	</div>
+																</div>
 															</div>
 														</div>
 													</div>
@@ -369,6 +534,24 @@
 														</div>
 															{% endfor %}
 														{% endif %}
+
+														{% if edit_task_errors %}
+															{% for error in edit_task_errors %}
+														<div class="alert alert-warning alert-dismissible fade show" role="alert">
+															<strong>Error!</strong> {{ error }}
+															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+														</div> 
+															{% endfor %}
+														{% endif %}
+
+														{% if task_error_messages %}
+															{% for error in task_error_messages %}
+														<div class="alert alert-warning alert-dismissible fade show" role="alert">
+															<strong>Error!</strong> {{ error }}
+															<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+														</div> 
+															{% endfor %}
+														{% endif %}
 														<div class="table-responsive">
 															<table class="table table-responsive-md" id="tasks-table">
 																<thead>
@@ -379,6 +562,8 @@
 																		<th><strong>Journalist Team</strong></th>
 																		<th><strong>Progress</strong></th>
 																		<th><strong>Other Details</strong></th>
+																		<th><strong>Edit Task</strong></th>
+																		<th><strong>Delete Task</strong></th>
 																	</tr>
 																</thead>
 																<tbody>
@@ -386,7 +571,7 @@
 																	{% if pending_tasks %}
 																		{% for task in pending_tasks %}
 																	<tr>
-																		<td><strong>{{ task.id }}</strong></td>
+																		<td style="width:40px;"><strong>{{ task.id }}</strong></td>
 																		<td>{{ task.title }}</td>
 																		<td>{{ task.editor.user.first_name }} {{ task.editor.user.last_name }}</td>
 																		<td>
@@ -461,6 +646,8 @@
 																				</div>
 																			</div>
 																		</td>
+																		<td><a href="#editTaskModalToggle" data-bs-toggle="modal" onclick="populateEditTaskModal('{{task.id}}','{{task.title}}','{{task.description}}','{{task.editor.id}}', '{{task.project.id}}','{{task.deadline|date:'Y-m-d\TH:i:s'}}', '{{task.deadline}}')" class="btn btn-primary" name="editProjectSub">Edit</a></td>
+																		<td><a href="#deleteTaskModal" data-bs-toggle="modal" onclick="populateDeleteTaskModal('{{task.id}}','{{task.title}}')" class="btn btn-danger" name="deleteTaskSub">Delete</a></td>
 																	</tr>	
 																		{% endfor %}
 																	
@@ -556,10 +743,11 @@
 																		</td>
 																		<td>
 																		{% if task.status == 'approved' %}
-																		<span class="text text-success"> N/A (Approved)</span>
+																		<span class="text text-success"><a href="{% url 'blog' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">View Blog</a> </span>
 																		{% else %}
 																			{% if task.submission_status == 'submitted' %}
 																			<a href="#approveArticleModalToggle" data-bs-toggle="modal" class="btn btn-outline-info" id="teamMembers">Approve/Reject -></a>
+																			
 																			<div class="modal fade" id="approveArticleModalToggle" tabindex="-1" aria-labelledby="approveArticleModalLabel" aria-hidden="true">
 																				<div class="modal-dialog modal-lg">
 																					<div class="modal-content">
@@ -570,20 +758,58 @@
 																								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
 																							</div>
 																							<div class="modal-body">
+																								<a href="{% url 'blog-preview' task_id=task.id %}" class="btn btn-secondary" target="_blank" id="teamMembers">Preview</a>
 																								<div class="col-lg-12">
 																									<h2>{{task.article.title}}</h2>
 																									{% for section in task.article.article_sections.all %}
 																									<h3>{{section.section_title}}</h3>
 																									<p>{{section.section_text}}</p>
-																									<p>by {{section.journalist.user.first_name}} {{section.journalist.user.last_name}} - {{section.journalist.type}}</p>											
+																									<p>by {{section.journalist.user.first_name}} {{section.journalist.user.last_name}} - {{section.journalist.type}}</p>	
+																									<hr>										
 																									
 																									{% endfor %}
 
+																									{% if task.article.photo_gallery.all %}
+																									{% for photo_gallery in task.article.photo_gallery.all %}
+																									<h3>{{photo_gallery.title}}</h3>
+																									{% if photo_gallery.images.all %}
+																									<div class="row mb-2">
+																									{% for image in photo_gallery.images.all %}
+																									{% if image.image  %}													
+																										<div class="col-md-6 h-50">
+																											<img class="img-fluid" src="{{image.image.url}}" alt="">
+																										</div>
+																									{% endif %}
+																									{% endfor %}
+																									</div>
+																									<hr>
+																									{% endif %}																									
+																									{% endfor %}
+																									{% else %}
+																									{% endif %}
+
+																									<div class="btn btn-outline-primary dropdown-toggle mb-2" data-bs-toggle="dropdown">
+																										REJECT
+																									</div>
+																									<div class="dropdown-menu dropdown-menu-left">
 																									<form method="post">
+																									{% csrf_token %}
+																										<input type="hidden" value="{{task.id}}" name="reject-task-id">
+																										<textarea required class="form-control" name="reason" rows="2" placeholder="reason"></textarea>
+																										<button class="btn btn-danger mt-2" type="submit" name='reject'>Reject Gallery</button>
+
+																									</form>
+																									</div>
+
+																									
+
+																									<form method="post" class="mb-2">
 																									{% csrf_token %}
 																										<input type="hidden" name="task-id" value="{{task.id}}">
 																										<button type="submit" class="btn btn-success" name="approve">APPROVE</button>
 																									</form>
+																									
+
 																								</div>											
 																							</div>
 																							<div class="modal-footer">
@@ -704,6 +930,54 @@
 	<script src="{% static 'workflow-static/vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
 
 	<script >
+
+		function populateDeleteTaskModal(id,title){
+			document.getElementById("deleteTaskModalLabel").innerHTML = "Delete "+ title + " Task";
+			document.getElementsByName('delete-task-id')[0].value=id;
+		}
+
+		function populateEditProjectModal(id,title,description){
+			document.getElementById("editProjectModalToggleLabel").innerHTML = "Edit "+ title + " Project";
+			//document.getElementById("setupTaskDescription").innerHTML = description;
+
+			document.getElementsByName('project-id')[0].value=id;
+			document.getElementsByName('new-project-title')[0].value=title;
+			document.getElementsByName('new-project-description')[0].value=description;
+		}
+
+		function populateEditTaskModal(id,title,description,editor_id, project_id,deadline, display_deadline){
+			document.getElementById("editTaskModalToggleLabel").innerHTML = "Edit "+ title + " Task";
+			document.getElementById("editTaskDeadline").innerHTML = display_deadline;
+
+			// Assuming the datetime value is stored in a variable called 'datetime'
+			var deadline = deadline;
+
+			// Parse the deadline string into a JavaScript Date object
+			var dateObj = new Date(deadline);
+
+			// Get the date and time components from the Date object
+			var min_date = dateObj.toISOString().split('T')[0]
+			var time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format: 'hh:mm'
+
+
+  			document.getElementsByName('edit-task-id')[0].value=id;
+			document.getElementsByName('new-task-title')[0].value = title;
+			document.getElementsByName('new-task-description')[0].value = description; 
+			document.getElementsByName('new-task-project-id')[0].value = project_id 
+			document.getElementsByName('new-task-editor-id')[0].value = editor_id
+
+			document.getElementById("new-task-enddate").setAttribute("min", min_date);
+
+			console.log(min_date)
+
+			document.getElementsByName('new-task-endtime')[0].value = time;
+			console.log(deadline);
+			/*
+			document.getElementsByName('new-task-enddate')[0].value = enddate 
+			document.getElementsByName('new-task-endtime')[0].value = 
+			*/
+			console.log()
+		}
 		var table = $('#projects-table').DataTable({
 			"scrollX": true,
 			language: {
@@ -721,15 +995,17 @@
 
 		// Calculate the date one week from now
 		var oneWeekFromNow = new Date();
+		var threeDaysFromNow = new Date();
 		oneWeekFromNow.setDate(currentDate.getDate() + 7);
+		threeDaysFromNow.setDate(currentDate.getDate() + 3)
 
 		// Format the minimum date in yyyy-mm-dd format
 		var minimumDate = oneWeekFromNow.toISOString().split('T')[0];
-
-		console.log(minimumDate)
+		var minimumDate2 = oneWeekFromNow.toISOString().split('T')[0];
 
 		// Set the minimum date value for the input field
 		document.getElementById("task-enddate").setAttribute("min", minimumDate);
+		document.getElementById("new-task-enddate").setAttribute("min", minimumDate2);
 
 	</script>
 
@@ -747,7 +1023,7 @@
 	</script>
 	{% endif %}	
 
-	{% if task_messages %}	
+	{% if task_messages or task_error_messages %}	
 	<script>			
 		document.getElementById('taskCollapseAccordion').click();
 	</script>

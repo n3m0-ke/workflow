@@ -29,9 +29,19 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
 									<div class="text-center mb-3">
-										<a href="#"><img src="{% static 'workflow-static/images/generic-icon.png' %}" alt=""></a>
+										<a href="#"><img height="50" src="{% static 'workflow-static/images/generic-icon.png' %}" alt=""></a>
 									</div>
                                     <h4 class="text-center mb-4">Logged Out</h4>
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            {% if 'error_message' in message.tags %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <strong>Error!</strong> {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
                                     <div class="text-center">
                                         <a href="{%url 'login'%}" class="btn btn-primary btn-block">Log In</a>
                                     </div>

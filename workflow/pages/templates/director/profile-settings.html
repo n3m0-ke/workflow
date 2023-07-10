@@ -52,6 +52,23 @@
 						<li class="breadcrumb-item"><a href="javascript:void(0)">Profile Settings</a></li>
 					</ol>
 				</div>
+                {% if profile_settings_errors %}
+                    {% for error in profile_settings_errors %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Error!</strong> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> 
+                    {% endfor %}
+                {% endif %}
+
+                {% if profile_settings_messages %}
+                    {% for message in profile_settings_messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Success!</strong> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div> 
+                    {% endfor %}
+                {% endif %}
                 <!-- row -->
                 <div class="row">
                     <div class="col-lg-12">
@@ -62,15 +79,15 @@
                                 </div>
                                 <div class="profile-info">
 									<div class="profile-photo">
-										<img src="images/profile/profile.png" class="img-fluid rounded-circle" alt="">
+										<img src="{{ user.profile.profile_picture.url }}" class="img-fluid rounded-circle" alt="">
 									</div>
 									<div class="profile-details">
 										<div class="profile-name px-3 pt-2">
-											<h4 class="text-primary mb-0">User Name</h4>
-											<p>User Expertise</p>
+											<h4 class="text-primary mb-0">{{user.first_name}} {{user.last_name}} </h4>
+											<p>{{user.profile.capacity}}</p>
 										</div>
 										<div class="profile-email px-2 pt-2">
-											<h4 class="text-muted mb-0">info@example.com</h4>
+											<h4 class="text-muted mb-0"> {{user.profile.email}} </h4>
 											<p>Email</p>
 										</div><br>
                                         
@@ -98,31 +115,45 @@
                                                 <div class="profile-about-me">
                                                     <div class="pt-4 border-bottom-1 pb-3">
                                                         <h4 class="text-primary">About Me</h4>
-                                                        <p class="mb-2">Bio line representing what the journalist thinks about themselves. This may be shown to users in the blog site</p>
-                                                        <p>Bio line representing what the journalist thinks about themselves. This may be shown to users in the blog siteBio line representing what the journalist thinks about themselves. This may be shown to users in the blog site</p>
+                                                        <p class="mb-2"> 
+                                                        {% if user.profile.bioline %}
+                                                        {{user.profile.bioline}}
+                                                        {% else %}
+                                                        <h4>No bioline available</h4>
+
+                                                        {% endif %}
+                                                        </p>
                                                     </div>
                                                 </div>
                                                 <div class="profile-skills mb-5">
                                                     <h4 class="text-primary mb-2">Specialties</h4>
-                                                    <a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Beauty</a>
-                                                    <a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Fashion</a>
-                                                    <a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Lifestyle</a>
-                                                    <a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">Sport</a>
+                                                    {% if employee.specialties.all %}
+                                                    {% for specialty in employee.specialties.all %}
+                                                    <a href="javascript:void(0);" class="btn btn-primary light btn-xs mb-1">{{specialty}}</a>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <h4>No specialties at the moment</h4>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="profile-lang  mb-5">
                                                     <h4 class="text-primary mb-2">Languages</h4>
-													<a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-us"></i> English</a> 
-													<a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-fr"></i> French</a>
-                                                    <a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-bd"></i> Swahili</a>
+													{% if employee.languages.all %}
+                                                    {% for language in employee.languages.all %}
+                                                    <a href="javascript:void(0);" class="text-muted pe-3 f-s-16"><i class="flag-icon flag-icon-bd"></i> {{language}}</a>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    <h4>No languages specified</h4>
+                                                    {% endif %}
+                                                    
                                                 </div>
                                                 <div class="profile-personal-info">
-                                                    <h4 class="text-primary mb-4">Personal Information</h4>
+                                                    <h4 class="text-primary mb-4">Other Information</h4>
                                                     <div class="row mb-2">
                                                         <div class="col-sm-3 col-5">
                                                             <h5 class="f-w-500">Name <span class="pull-end">:</span>
                                                             </h5>
                                                         </div>
-                                                        <div class="col-sm-9 col-7"><span>Mitchell C.Shay</span>
+                                                        <div class="col-sm-9 col-7"><span>{{employee.first_name}} {{employee.other_names}}</span>
                                                         </div>
                                                     </div>
                                                     <div class="row mb-2">
@@ -130,22 +161,14 @@
                                                             <h5 class="f-w-500">Email <span class="pull-end">:</span>
                                                             </h5>
                                                         </div>
-                                                        <div class="col-sm-9 col-7"><span>example@examplel.com</span>
+                                                        <div class="col-sm-9 col-7"><span>{{employee.email}}</span>
                                                         </div>
                                                     </div>
                                                     <div class="row mb-2">
                                                         <div class="col-sm-3 col-5">
-                                                            <h5 class="f-w-500">Age <span class="pull-end">:</span>
-                                                            </h5>
+                                                            <h5 class="f-w-500">Time On Job <span class="pull-end">:</span></h5>
                                                         </div>
-                                                        <div class="col-sm-9 col-7"><span>27</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row mb-2">
-                                                        <div class="col-sm-3 col-5">
-                                                            <h5 class="f-w-500">Year Experience <span class="pull-end">:</span></h5>
-                                                        </div>
-                                                        <div class="col-sm-9 col-7"><span>07 Year Experiences</span>
+                                                        <div class="col-sm-9 col-7"><span>{{ employee.date_of_employment|timesince }} </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -154,48 +177,31 @@
                                                 <div class="pt-3">
                                                     <div class="settings-form">
                                                         <h4 class="text-primary">Account Setting</h4>
-                                                        <form>
+                                                        <form method="post">
+                                                        {% csrf_token %}
+
                                                             <div class="row mb-3">
                                                                 <div class="mb-3 col-md-6">
-                                                                    <label class="form-label">Email</label>
-                                                                    <input type="email" placeholder="Email" class="form-control">
-                                                                </div>
-                                                                <div class="mb-3 col-md-6">
                                                                     <label class="form-label">Password</label>
-                                                                    <input type="password" placeholder="Password" class="form-control">
+                                                                    <input type="password" name="password" placeholder="Password" class="form-control">
                                                                 </div>
                                                                 <div class="mb-3 col-md-6">
                                                                     <label class="form-label">Confirm Password</label>
-                                                                    <input type="password" placeholder="Password" class="form-control">
+                                                                    <input type="password" name="confirm_password" placeholder="Password" class="form-control">
                                                                 </div>
                                                             </div>
                                                             <hr>
                                                             <h4 class="text-primary">Work Profile Setting</h4>
                                                             <div class="row mb-3">
                                                                 <div class="mb-3 col-md-6">
-                                                                    <label class="form-label">Specialties</label>
-                                                                    <select class="multi-select" name="specialties[]" multiple="multiple">
-                                                                        <option value="AL">Politics</option>
-                                                                        <option value="WY">Beauty</option>
-                                                                        <option value="UI">Sport</option>
-                                                                        <option value="UI">Business</option>
-                                                                        <option value="UI">Fashion</option>
-                                                                        <option value="UI">Lifelstyle</option>
-                                                                    </select>
+                                                                    <label class="form-label">Profile picture</label>
+                                                                    <input type="file" name="profile_picture" class="form-file-input form-control">
                                                                 </div>
-                                                                <div class="mb-3 col-md-6">
-                                                                    <label class="form-label">Languages</label>
-                                                                    <select class="multi-select" name="languages[]" multiple="multiple">
-                                                                        <option value="AL">English</option>
-                                                                        <option value="WY">French</option>
-                                                                        <option value="UI">Swahili</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
+                                                            </div>                                                            
                                                             
                                                             <div class="mb-3">
                                                                 <label class="form-label">Bio Line (About Me)</label>
-                                                                <textarea class="form-control" rows="4" id="comment"></textarea>                                                                
+                                                                <textarea class="form-control" name="bioline" rows="4" id="comment"></textarea>                                                                
                                                             </div>
                                                             
                                                             <button class="btn btn-primary" type="submit">Submit</button>

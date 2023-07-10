@@ -51,7 +51,6 @@ def registration_view(request):
     context['username'] = ''
     if(request.method == 'POST'):
         
-        username = request.POST.get('username')
         email = request.POST.get('email')
         id_card_number = request.POST.get('id_card_number')
         password = request.POST.get('password1')
@@ -86,14 +85,8 @@ def registration_view(request):
         
         if (employee):
             # create username
-            if not username:
-                username = generate_unique_username(employee.first_name, employee.other_names)
-            else:
-                count = User.objects.filter(username__startswith=username).count()
-                if count > 0:
-                    username = f"{username}{count + 1}"
-                else:
-                    username = username
+            
+            username = employee.id_card_number
 
             # create user
             user = User(username=username, email=email, first_name=employee.first_name, last_name=employee.other_names)
@@ -124,7 +117,7 @@ def registration_view(request):
                 director_user.save()
             
             messages.success(request, f'{username}', extra_tags='username')
-            messages.success(request, f'Account Created Successfully. Now you can login with username: {username}.', extra_tags='alert_message')
+            messages.success(request, f'Account Created Successfully. Now you can login with your id number: {username}.', extra_tags='alert_message')
             return redirect('login')
         
         else:

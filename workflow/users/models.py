@@ -3,6 +3,17 @@ from django.contrib.auth.models import User
 from PIL import Image
 
 # Create your models here.
+class Specialties(models.Model):
+    specialty = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f'{self.specialty}'
+
+class LanguageChoices(models.Model):
+    language = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f'{self.language}'
 
 class CapacityChoices(models.TextChoices):
     WRITER = 'writer', 'Writer Journalist'
@@ -16,9 +27,12 @@ class Employee(models.Model):
     email = models.EmailField()
     id_card_number = models.CharField(max_length=10, unique=True)
     capacity = models.CharField(max_length=20, choices=CapacityChoices.choices)
+    specialties = models.ManyToManyField(Specialties, related_name='specialties', null=True)
+    languages = models.ManyToManyField(LanguageChoices, related_name='languages', null=True)
+    date_of_employment = models.DateField(null=True)
 
     def __str__(self):
-        return f'{self.first_name} {self.other_names} Employee Record'
+        return f'{self.capacity} {self.first_name} {self.other_names} Record'
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -26,6 +40,7 @@ class Profile(models.Model):
     email = models.EmailField()
     id_card_number = models.CharField(max_length=10)
     capacity = models.CharField(max_length=20, choices=CapacityChoices.choices)
+    bioline = models.TextField(null=True)
 
     def __str__(self):
         return f'{self.user.username} Profile'

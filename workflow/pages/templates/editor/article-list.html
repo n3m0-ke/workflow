@@ -388,7 +388,7 @@
 								</div>
 							</div>
 							<div class="accordion__item">
-								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseThree">
+								<div class="accordion__header rounded-lg" data-bs-toggle="collapse" data-bs-target="#default_collapseThree" id="taskSubmittedCollapseAccordion">
 									<span class="accordion__header-alphabet">Submitted Tasks</span>
 									<span class="accordion__header-line flex-grow-1"></span>
 									<span class="accordion__header--text">{{complete_tasks.count}} Task(s)</span>
@@ -586,10 +586,18 @@
 	</script>
 	{% endif %}
 
-	{% if messages %}
+	{% if messages or in_progress %}
 	<script>
 		$(document).ready(function() {
 			document.getElementById('taskCollapseAccordion').click();			
+		});	
+	</script>
+	{% endif %}
+
+	{% if submitted %}
+	<script>
+		$(document).ready(function() {
+			document.getElementById('taskSubmittedCollapseAccordion').click();			
 		});	
 	</script>
 	{% endif %}

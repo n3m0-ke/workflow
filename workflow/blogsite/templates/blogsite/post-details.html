@@ -11,9 +11,10 @@
     <meta name="author" content="">
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
 
-    <title>BlogSite - Blog Name</title>
+    <title>BlogSite - {{task.article.title}} </title>
 
 <!-- Bootstrap core CSS -->
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'workflow-static/images/generic-icon.png' %}">
 <link href="{% static 'blogsite-static/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
 
@@ -21,6 +22,8 @@
 <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/fontawesome.css' %}">
 <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/templatemo-stand-blog.css' %}">
 <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/owl.css' %}">
+
+<link href="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
 
   </head>
 
@@ -114,7 +117,7 @@
                       <ul class="post-info">
                         <li>
                         {% for journalist in journalists %}
-                        <a href="#">{{journalist.user.first_name}} {{journalist.user.last_name}}</a> || 
+                        <a href="#">{{journalist.user.first_name}} {{journalist.user.last_name}}</a> 
                         {% endfor %}
                         </li>
                         <li><a href="#"> {{task.publication_date}} </a></li>
@@ -161,6 +164,7 @@
                     </div>
                     <div class="content">
                       <form id="comment" method="post">
+                        {% csrf_token %}
                         <div class="row">
                           <div class="col-md-6 col-sm-12">
                             <fieldset>
@@ -174,12 +178,12 @@
                           </div>
                           <div class="col-md-12 col-sm-12">
                             <fieldset>
-                              <input name="Rating" type="number" id="subject" max="5" min="0" placeholder="Rating">
+                              <input name="rating" required type="number" id="subject" max="5" min="0" placeholder="Rating">
                             </fieldset>
                           </div>
                           <div class="col-lg-12">
                             <fieldset>
-                              <textarea name="message" rows="6" id="message" placeholder="Type your review" required=""></textarea>
+                              <textarea name="message" rows="6" id="message" placeholder="Type your review" required></textarea>
                             </fieldset>
                           </div>
                           <div class="col-lg-12">
@@ -203,7 +207,7 @@
                       {% for review in task.reviews.all %}
                         <li>
                           <div class="author-thumb">
-                            <img src="{% static 'blogsite-static/assets/images/comment-author-01.jpg' %}" alt="">
+                            <img src="{% static 'workflow-static/images/avatar/default.png' %}" alt="">
                           </div>
                           <div class="right-content">
                             <h4>{{review.name}}<span>{{review.review_date}}</span></h4>
@@ -224,72 +228,9 @@
             </div>
           </div>
           <div class="col-lg-4">
-            <div class="sidebar">
-              <div class="row">
-                <div class="col-lg-12">
-                  <div class="sidebar-item search">
-                    <form id="search_form" name="gs" method="GET" action="#">
-                      <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
-                    </form>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <div class="sidebar-item recent-posts">
-                    <div class="sidebar-heading">
-                      <h2>Recent Posts</h2>
-                    </div>
-                    <div class="content">
-                      {% if other_posts %}
-                      <ul>
-                      {% for task in other_posts %}
-                      <li><a href="{% url 'blog' task_id=task.id %}">
-                          <h5> {{task.article.title}} -> {{task.article.subtext}}</h5>
-                          <span> {{task.publication_date}} </span>
-                        </a></li>
-                      {% endfor %}                      
-                      {% else %}
-                      <center>There are no other posts/Articles at the moment</center>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <div class="sidebar-item categories">
-                    <div class="sidebar-heading">
-                      <h2>Categories</h2>
-                    </div>
-                    <div class="content">
-                      <ul>
-                        <li><a href="#">- Nature Lifestyle</a></li>
-                        <li><a href="#">- Awesome Layouts</a></li>
-                        <li><a href="#">- Creative Ideas</a></li>
-                        <li><a href="#">- Responsive Templates</a></li>
-                        <li><a href="#">- HTML5 / CSS3 Templates</a></li>
-                        <li><a href="#">- Creative &amp; Unique</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-12">
-                  <div class="sidebar-item tags">
-                    <div class="sidebar-heading">
-                      <h2>Tag Clouds</h2>
-                    </div>
-                    <div class="content">
-                      <ul>
-                        <li><a href="#">Lifestyle</a></li>
-                        <li><a href="#">Creative</a></li>
-                        <li><a href="#">HTML5</a></li>
-                        <li><a href="#">Inspiration</a></li>
-                        <li><a href="#">Motivation</a></li>
-                        <li><a href="#">PSD</a></li>
-                        <li><a href="#">Responsive</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {% include 'blogsite/right-side-section.html' %}
+            {% block right-side-section %}
+            {% endblock %}
           </div>
         </div>
       </div>
@@ -342,6 +283,23 @@
           }
       }
     </script>
+
+    <script src="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+    {% if review_message %}
+    <input type="hidden" id="review_message" value="{{review_message}}">
+    <script>
+      $(document).ready(function() {
+        var messages = $('#review_message').val();
+
+        Swal.fire({
+          title: 'Review Submission',
+          text: messages,
+          icon: 'success'
+        })			
+      });	
+    </script>
+    {% endif %}
 
 
   </body>

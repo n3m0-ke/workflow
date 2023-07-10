@@ -45,6 +45,310 @@
         ***********************************-->
         <div class="content-body">
             <!-- row -->
+            <div class="container-fluid">
+                <div class="form-head d-flex mb-1 align-items-start flex-wrap justify-content-between">
+                    <div class="me-auto d-lg-block">
+                        <h3 class="text-primary font-w600">Dashboard</h3>
+                        <p class="mb-0"><?php echo $_SESSION['usertype'];?></p>
+                    </div>
+                    <a href="{% url 'director-article-list' %}?submitted=1" class="btn btn-danger ms-3">
+                        <i class="flaticon-381-notepad"></i>
+                        Checkout Submissions
+                    </a>
+                </div>
+                <hr>
+                <div>
+                    <h4>Projects and Tasks</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">
+                            
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-primary mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">TOTAL PROJECTS</p>
+                                                        <h3 class="text-white">{{num_projects}}</h3>
+                                                        <div class="progress mb-2 bg-secondary">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{percentage_active_projects}}%"></div>
+                                                        </div>
+                                                        <small> {{percentage_active_projects}}% Active</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'director-article-list' %}" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-primary mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">TASKS IN PROGRESS</p>
+                                                        <h3 class="text-white"> {{num_tasks_in_progress}} </h3>
+                                                        <div class="progress mb-2 bg-secondary">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{num_tasks_in_progress_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{num_tasks_in_progress_percentage}}% in Progress</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'director-article-list' %}?in_progress=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                           
+
+
+                        </div>
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-primary mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">SUBMITTED TASKS</p>
+                                                        <h3 class="text-white"> {{num_tasks_submitted}} </h3>
+                                                        <div class="progress mb-2 bg-secondary">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{num_tasks_submitted_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{num_tasks_submitted_percentage}}% Submitted</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'director-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-primary mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">APPROVED TASKS</p>
+                                                        <h3 class="text-white">{{num_tasks_approved}}</h3>
+                                                        <div class="progress mb-2 bg-secondary">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{num_tasks_approved_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{num_tasks_approved_percentage}}% Approved</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'director-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <h4>Performance Analytics</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">                            
+                            <div class="card">
+                                <div class="card-header border-0 pb-0">
+                                    <h4 class="card-title">Visitors</h4>
+                                    <div class="dropdown ms-auto">
+                                        <div class="btn-link" data-bs-toggle="dropdown">
+                                            <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1"><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><rect x="0" y="0" width="24" height="24"></rect><circle fill="#000000" cx="5" cy="12" r="2"></circle><circle fill="#000000" cx="12" cy="12" r="2"></circle><circle fill="#000000" cx="19" cy="12" r="2"></circle></g></svg>
+                                        </div>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="javascript:void(0);">Edit</a>
+                                            <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body px-3 pt-2">
+                                    <div id="chartStrock"></div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="card">
+								<div class="card-header border-0 pb-0">
+									<h4 class="card-title">Visitor Metrics</h4>
+								</div>
+								<div class="card-body pt-2">
+									<h4 class="text-dark font-w400">Total number of Clicks</h4>
+									<h3 class="text-primary font-w600 mb-md-5"> {{num_clicks}} </h3>
+									<div class="row mx-0 align-items-center">
+										<div class="row">
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6> {{num_reviews_anonymous}} </h6>
+													<span>Number of Reviews</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-success" style="width: 100%"></div>
+												</div>
+											</div>
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{num_reviews_anonymous_percentage}}%</h6>
+													<span>Anonymous reviews</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-info" style="width: {{num_reviews_anonymous_percentage}}%"></div>
+												</div>
+											</div>
+                                            <div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{num_reviews_non_anonymous_percentage}}%</h6>
+													<span>Non Anonymous reviews</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-info" style="width: {{num_reviews_non_anonymous_percentage}}%"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <hr>
+                <div>
+                    <h4>Latest Data</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">                            
+                            <div class="card">
+                                <div class="card-header border-0 pb-0">
+                                    <h4 class="card-title">Top Engaging Piece</h4>
+                                </div>
+                                <div class="card-body px-3 pt-2">
+                                    {% if most_engaging_piece %}
+                                    <div class="widget-media best-doctor">
+                                        <ul class="timeline">
+                                            <li>
+                                                <div class="timeline-panel d-flex align-items-center justify-content-between flex-wrap">
+                                                    <div class="d-flex">
+                                                        <div class="media me-4">
+                                                            {% if most_engaging_piece.article.photo_gallery.all %}
+                                                            {% for photo_gallery in most_engaging_piece.article.photo_gallery.all %}
+                                                            
+                                                            {% if photo_gallery.images.all %}
+                                                            
+                                                            {% for image in photo_gallery.images.all %}
+                                                            {% if image.image  %}													
+                                                                <div class="col-md-6 h-50">
+                                                                    <img class="img-fluid" src="{{image.image.url}}" alt="">
+                                                                </div>
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                            </div>
+                                                            <hr>
+                                                            {% endif %}																									
+                                                            {% endfor %}
+                                                            {% else %}
+                                                            <img alt="image" width="90" src="images/avatar/1.jpg">
+                                                            {% endif %}                                                            
+                                                            <div class="number">#1</div>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h4 class="mb-2"> {{most_engaging_piece.article.title}} </h4>
+                                                            <p class="mb-2 text-primary">Editor - {{most_engaging_piece.editor.user.first_name}} {{most_engaging_piece.editor.user.last_name}} <br>
+                                                            Clicks - {{most_engaging_piece.click_count}}
+                                                            </p>
+                                                            <div class="star-review">
+                                                                <i class="fa fa-star text-orange"></i>
+                                                                <i class="fa fa-star text-orange"></i>
+                                                                <i class="fa fa-star text-orange"></i>
+                                                                <i class="fa fa-star text-gray"></i>
+                                                                <i class="fa fa-star text-gray"></i>
+                                                                <span class="ms-3">{{most_engaging_piece.reviews.all.count}} reviews</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>	
+                                                    <div class="social-media">
+                                                        <a href="{% url 'blog' task_id=most_engaging_piece.id %}" class="btn btn-outline-primary btn-rounded btn-sm">View In Blog Site</i></a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    {% else %}
+                                    <h3 class="mt-4">No piece published from any of your projects yet</h3>
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="card">
+								<div class="card-header border-0 pb-0">
+									<h4 class="card-title">Latest Review</h4>
+								</div>
+								<div class="card-body pt-2">
+
+                                    {% if latest_review %}
+                                    <div class="media review-box mb-4 d-flex">
+                                        <div class="d-flex">
+                                            <div class="media-body">
+                                                <h4 class="mt-0 mb-3 text-black"> {{latest_review.name}} </h4>
+                                                <p class="mb-3"> {{latest_review.review}} </p>
+                                            </div>
+                                        </div>	
+                                        <div class="media-footer">
+                                            <div class="star-review text-sm-left">
+                                                <span class="text-primary">Rating - {{latest_review.rating}}</span>
+                                                <i class="fa fa-star {% if latest_review.rating > 0 %} text-orange {% endif %}"></i>
+                                                <i class="fa fa-star {% if latest_review.rating > 1 %} text-orange {% endif %}"></i>
+                                                <i class="fa fa-star {% if latest_review.rating > 2 %} text-orange {% endif %}"></i>
+                                                <i class="fa fa-star {% if latest_review.rating > 3 %} text-orange {% endif %}"></i>
+                                                <i class="fa fa-star {% if latest_review.rating > 4 %} text-orange {% endif %}"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% else %}
+                                    <h3 class="mt-4">No reviews/engagements yet for any piece in your projects</h3>
+                                    
+                                    {% endif %}
+									
+								</div>
+							</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 			
         </div>
         <!--**********************************

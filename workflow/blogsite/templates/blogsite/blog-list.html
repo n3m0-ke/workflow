@@ -1,0 +1,368 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="TemplateMo">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i&display=swap" rel="stylesheet">
+
+    <title>BlogSite - {{search_term}}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'workflow-static/images/generic-icon.png' %}">
+    <link href="{% static 'blogsite-static/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/templatemo-stand-blog.css' %}">
+    <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/owl.css' %}">
+
+  </head>
+
+  <body>
+
+    <!-- ***** Preloader Start ***** -->
+    <div id="preloader">
+        <div class="jumper">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>  
+    <!-- ***** Preloader End ***** -->
+
+    <!-- Header -->
+    <header class="">
+      <nav class="navbar navbar-expand-lg">
+        <div class="container">
+          <a class="navbar-brand" href="{% url 'blog-home' %}"><h2>BlogSite<em>.</em></h2></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'blog-home' %}">Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'blog-list' %}">Blog Entries
+                  <span class="sr-only">(current)</span></a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'about-us' %}">About Us</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'contact-us' %}">Contact Us</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Page Content -->
+    <!-- Banner Starts Here -->
+    <div class="heading-page header-text">
+      <section class="page-heading">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="text-content">
+                
+                <h2>Blog Entries</h2>
+                {% if search_term %}
+                <h4>{{search_term}}</h4>
+                {% else %}
+                <h4>All Blogs and Articles</h4>
+                {% endif %}
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    
+    <!-- Banner Ends Here -->
+
+    <section class="blog-posts">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="all-blog-posts">
+              {% if posts %}
+              <div class="row">
+                {% for post in posts %}
+                <div class="col-lg-12">
+                  <div class="blog-post">
+                    <div class="blog-thumb">
+                      {% if post.photogallery.all %}
+                      {% for photo_gallery in post.article.photo_gallery.all %}
+                      {% if photo_gallery.images.all %}
+                      {% for image in photo_gallery.images.all %}
+                      {% if image.image and image.name == 'one' %}													
+                      <img src="{{image.image.url}}" alt="">
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}
+                      {% endfor %}                      
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                      {% endfor %}
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                    </div>
+                    <div class="down-content">
+                      <span>{{post.article.title}}</span>
+                      <a href="{% url 'blog' task_id=post.id %}"><h4>{{post.article.subtext}}</h4></a>
+                      <ul class="post-info">
+                        <li>
+                        {% for journalist in post.journalists.all %}
+                        <a href="#">{{journalist.user.first_name}} {{journalist.user.last_name}}</a> || 
+                        {% endfor %}
+                        </li>
+                        <li><a href="#"> {{post.publication_date}} </a></li>
+                        <li><a href="#"> {{post.reviews.all.count}} Reviews </a></li>
+                      </ul>
+                      <p>
+                      {% if post.article.article_sections.all %}
+                      {{post.article.article_sections.all.0.section_text|truncatechars:250}}
+                      {% endif %}
+                         
+                      </p>
+                      <div class="post-options">
+                        <div class="row">
+                          <div class="col-6">
+                            {% if post.tags.all %}
+                            <ul class="post-tags">
+                            <li><i class="fa fa-tags"></i></li>
+                            {% for tag in post.tags.all %}
+                            <li><a href="#"> {{tag.tag_name}} </a></li> &nbsp; &nbsp;
+                            {% endfor %}
+                            </ul>
+                            {% endif %}
+                          </div>
+                          <div class="col-6">
+                            <ul class="post-share">
+                              <li><i class="fa fa-share-alt"></i></li>
+                              <li><a href="#">Share</a>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="col-lg-12">
+                  <div class="main-button">
+                    <a href="{% url 'blog-list' %}">View All Posts</a>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              {% if search_term %}
+              <h2>There are no articles or blogs on '{{search_term}}' at the moment. Check out the blogs below...<h2>
+              <div class="row">
+                {% for post in all_posts %}
+                <div class="col-lg-12">
+                  <div class="blog-post">
+                    <div class="blog-thumb">
+                      {% if post.photogallery.all %}
+                      {% for photo_gallery in post.article.photo_gallery.all %}
+                      {% if photo_gallery.images.all %}
+                      {% for image in photo_gallery.images.all %}
+                      {% if image.image and image.name == 'one' %}													
+                      <img src="{{image.image.url}}" alt="">
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}
+                      {% endfor %}                      
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                      {% endfor %}
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                    </div>
+                    <div class="down-content">
+                      <span>{{post.article.title}}</span>
+                      <a href="{% url 'blog' task_id=post.id %}"><h4>{{post.article.subtext}}</h4></a>
+                      <ul class="post-info">
+                        <li>
+                        {% for journalist in post.journalists.all %}
+                        <a href="#">{{journalist.user.first_name}} {{journalist.user.last_name}}</a> || 
+                        {% endfor %}
+                        </li>
+                        <li><a href="#"> {{post.publication_date}} </a></li>
+                        <li><a href="#"> {{post.reviews.all.count}} Reviews </a></li>
+                      </ul>
+                      <p>
+                      {% if post.article.article_sections.all %}
+                      {{post.article.article_sections.all.0.section_text|truncatechars:250}}
+                      {% endif %}
+                         
+                      </p>
+                      <div class="post-options">
+                        <div class="row">
+                          <div class="col-6">
+                            {% if post.tags.all %}
+                            <ul class="post-tags">
+                            <li><i class="fa fa-tags"></i></li>
+                            {% for tag in post.tags.all %}
+                            <li><a href="#"> {{tag.tag_name}} </a></li> &nbsp; &nbsp;
+                            {% endfor %}
+                            </ul>
+                            {% endif %}
+                          </div>
+                          <div class="col-6">
+                            <ul class="post-share">
+                              <li><i class="fa fa-share-alt"></i></li>
+                              <li><a href="#">Share</a>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="col-lg-12">
+                  <div class="main-button">
+                    <a href="{% url 'blog-list' %}">View All Posts</a>
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="row">
+              <h2>Blog Entries<h2>
+                {% for post in all_posts %}
+                <div class="col-lg-12">
+                  <div class="blog-post">
+                    <div class="blog-thumb">
+                      {% if post.photogallery.all %}
+                      {% for photo_gallery in post.article.photo_gallery.all %}
+                      {% if photo_gallery.images.all %}
+                      {% for image in photo_gallery.images.all %}
+                      {% if image.image and image.name == 'one' %}													
+                      <img src="{{image.image.url}}" alt="">
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}
+                      {% endfor %}                      
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                      {% endfor %}
+                      {% else %}
+                      <img src="{% static 'blogsite-static/assets/images/blog-post-01.jpg' %}" alt="">
+                      {% endif %}                      
+                    </div>
+                    <div class="down-content">
+                      <span>{{post.article.title}}</span>
+                      <a href="{% url 'blog' task_id=post.id %}"><h4>{{post.article.subtext}}</h4></a>
+                      <ul class="post-info">
+                        <li>
+                        {% for journalist in post.journalists.all %}
+                        <a href="#">{{journalist.user.first_name}} {{journalist.user.last_name}}</a> || 
+                        {% endfor %}
+                        </li>
+                        <li><a href="#"> {{post.publication_date}} </a></li>
+                        <li><a href="#"> {{post.reviews.all.count}} Reviews </a></li>
+                      </ul>
+                      <p>
+                      {% if post.article.article_sections.all %}
+                      {{post.article.article_sections.all.0.section_text|truncatechars:250}}
+                      {% endif %}
+                         
+                      </p>
+                      <div class="post-options">
+                        <div class="row">
+                          <div class="col-6">
+                            {% if post.tags.all %}
+                            <ul class="post-tags">
+                            <li><i class="fa fa-tags"></i></li>
+                            {% for tag in post.tags.all %}
+                            <li><a href="#"> {{tag.tag_name}} </a></li> &nbsp; &nbsp;
+                            {% endfor %}
+                            </ul>
+                            {% endif %}
+                          </div>
+                          <div class="col-6">
+                            <ul class="post-share">
+                              <li><i class="fa fa-share-alt"></i></li>
+                              <li><a href="#">Share</a>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="col-lg-12">
+                  <div class="main-button">
+                    <a href="{% url 'blog-list' %}">View All Posts</a>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              
+
+              {% endif %}
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <footer>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <ul class="social-icons">
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">Twitter</a></li>
+              <li><a href="#">Linkedin</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'blogsite-static/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'blogsite-static/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- Additional Scripts -->
+    <script src="{% static 'blogsite-static/assets/js/custom.js' %}"></script>
+    <script src="{% static 'blogsite-static/assets/js/owl.js' %}"></script>
+    <script src="{% static 'blogsite-static/assets/js/slick.js' %}"></script>
+    <script src="{% static 'blogsite-static/assets/js/isotope.js' %}"></script>
+    <script src="{% static 'blogsite-static/assets/js/accordions.js' %}"></script>
+
+    <script language = "text/Javascript"> 
+      cleared[0] = cleared[1] = cleared[2] = 0; //set a cleared flag for each field
+      function clearField(t){                   //declaring the array outside of the
+      if(! cleared[t.id]){                      // function makes it static and global
+          cleared[t.id] = 1;  // you could use true and false, but that's more typing
+          t.value='';         // with more chance of typos
+          t.style.color='#fff';
+          }
+      }
+    </script>
+
+  </body>
+</html>

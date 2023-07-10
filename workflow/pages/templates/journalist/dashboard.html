@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,6 +46,188 @@
         ***********************************-->
         <div class="content-body">
             <!-- row -->
+            <div class="container-fluid">
+                <div class="form-head d-flex mb-1 align-items-start flex-wrap justify-content-between">
+                    <div class="me-auto d-lg-block">
+                        <h3 class="text-primary font-w600">Dashboard</h3>
+                        <p class="mb-0"><?php echo $_SESSION['usertype'];?></p>
+                    </div>
+                    <a href="{% url 'director-article-list' %}?submitted=1" class="btn btn-danger ms-3">
+                        <i class="flaticon-381-notepad"></i>
+                        Checkout Submissions
+                    </a>
+                </div>
+                <hr>
+                <div>
+                    <h4>Tasks</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">
+                            
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-danger mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">INCOMPLETE TASKS</p>
+                                                        <h3 class="text-white">{{num_incomplete_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{num_incomplete_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{num_incomplete_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'journalist-article-list' %}" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-danger mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">COMPLETE TASKS</p>
+                                                        <h3 class="text-white">{{num_complete_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{num_complete_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{num_complete_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'journalist-article-list' %}?complete=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                           
+
+
+                        </div>
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-danger mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">URGENT TASK</p>
+                                                        {% if most_urgent_task %}
+                                                        <h3 class="text-white">{{most_urgent_task.title}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{most_urgent_task.progress}}%"></div>
+                                                        </div>
+                                                        <small>{{most_urgent_task.progress}}% progress</small>
+                                                        
+                                                        {% else %}
+                                                        <h3 class="text-white">None</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: 100%"></div>
+                                                        </div>
+                                                        <small>100% progress</small>
+                                                        {% endif %}
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">
+                                            {% if most_urgent_task %}
+                                            							
+                                            <a href="{% url 'journalist-current-article' task_id=most_urgent_task.id %}" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Check Out	>>				
+                                            </a>
+                                            {% else %}							
+                                            <a href="{% url 'journalist-article-list' %}?complete=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>
+                                            {% endif %}		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-danger mb-0">                                            
+                                            <ul class="list-group list-group-flush">
+                                                {% if latest_notification %}
+                                                <li class="list-group-item d-flex justify-content-between"><span class="mb-0">{{latest_notification.task.title}} :</span>{{latest_notification.message}}</li>
+                                                {% else %}
+                                                <li class="list-group-item d-flex justify-content-between"><span class="mb-0">No Task Notifications at the moment</span></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">
+                                            {% if latest_notification %}								
+                                            <a href="{% url 'editor-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>                                            
+                                            {% else %}								
+                                            <a href="{% url 'editor-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>
+                                            {% endif %}		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <h4>TOP ARTICLES</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">                            
+                            <div class="card">
+									<div class="card-header border-0 pb-0">
+										<h4 class="card-title">Top Engagement Articles</h4>
+									</div>
+									<div class="card-body pt-2">
+										<div id="journalist-chartBar"></div>
+									</div>
+								</div>
+                        </div>
+
+
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="card">
+                                <div class="card-header border-0 pb-0">
+                                    <h4 class="card-title">Top Single Article</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="media patient-box d-flex justify-content-between align-self-center">
+                                        <div class="d-flex align-self-center">
+                                            <div class="media-body">
+                                                <h3 class="mt-0 mb-2 text-black bold mt-1"><b>Top Article Title</b></h3>
+                                                <h4 class="mb-4 text-primary">SubText</h4>
+
+                                            </div>
+                                        </div>	
+                                        <div class="d-flex align-self-center">
+                                            <div id="journalist-chartCircle" class="me-3"></div>
+                                        </div>	
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 			
         </div>
         <!--**********************************
@@ -82,6 +266,187 @@
     {% include 'workflow-scripts.html' %}
 	{% block workflow-scripts-section %}
 	{% endblock %}
+
+    <script>
+    var chartBar = function(){
+		
+		var options = {
+			  series: [
+				{
+					name: 'Clicks',
+					data: [44, 55, 90, 80, 75],
+					//radius: 12,	
+				}, 
+				{
+				  name: 'Reviews',
+				  data: [15, 25, 15, 35, 30]
+				}, 
+				
+			],
+				chart: {
+				type: 'bar',
+				height: 350,
+				
+				toolbar: {
+					show: false,
+				},
+				
+			},
+			plotOptions: {
+			  bar: {
+				horizontal: false,
+				columnWidth: '55%',
+				endingShape: 'rounded'
+			  },
+			},
+			colors:['#450b5a', '#ff2c53'],
+			dataLabels: {
+			  enabled: false,
+			},
+			markers: {
+		shape: "circle",
+		},
+		
+		
+			legend: {
+				show: true,
+				fontSize: '12px',
+				labels: {
+					colors: '#000000',
+					
+					},
+				markers: {
+				width: 18,
+				height: 18,
+				strokeWidth: 0,
+				strokeColor: '#fff',
+				fillColors: undefined,
+				radius: 12,	
+				}
+			},
+			stroke: {
+			  show: true,
+			  width: 1,
+			  colors: ['transparent']
+			},
+			grid: {
+				borderColor: '#eee',
+			},
+			xaxis: {
+				
+			  categories: ['Articel', 'Article', 'Article', 'Article', 'Article'],
+			  labels: {
+			   style: {
+				  colors: '#787878',
+				  fontSize: '13px',
+				  fontFamily: 'poppins',
+				  fontWeight: 100,
+				  cssClass: 'apexcharts-xaxis-label',
+				},
+			  },
+			  crosshairs: {
+			  show: false,
+			  }
+			},
+			yaxis: {
+				labels: {
+			   style: {
+				  colors: '#787878',
+				  fontSize: '13px',
+				   fontFamily: 'poppins',
+				  fontWeight: 100,
+				  cssClass: 'apexcharts-xaxis-label',
+			  },
+			  },
+			},
+			fill: {
+			  opacity: 1
+			},
+			tooltip: {
+			  y: {
+				formatter: function (val) {
+				  return "$ " + val + " thousands"
+				}
+			  }
+			}
+			};
+
+			var chartBar1 = new ApexCharts(document.querySelector("#journalist-chartBar"), options);
+			chartBar1.render();
+	}
+
+    var chartCircle = function(){
+		
+		
+		var optionsCircle = {
+		  chart: {
+			type: 'radialBar',
+			//width:320,
+			height: 350,
+			offsetY: 0,
+			offsetX: 0,
+			
+		  },
+		  plotOptions: {
+			radialBar: {
+			  size: undefined,
+			  inverseOrder: false,
+			  hollow: {
+				margin: 0,
+				size: '35%',
+				background: 'transparent',
+			  },
+			  
+			  
+			  
+			  track: {
+				show: true,
+				background: '#e1e5ff',
+				strokeWidth: '10%',
+				opacity: 1,
+				margin: 15, // margin is in pixels
+			  },
+
+
+			},
+		  },
+		  responsive: [{
+          breakpoint: 480,
+          options: {
+			chart: {
+			offsetY: 0,
+			offsetX: 0
+		  },	
+            legend: {
+              position: 'bottom',
+              offsetX:0,
+              offsetY: 0
+            }
+          }
+        }],
+		
+		fill: {
+          opacity: 1
+        },
+		
+		colors:['#ff2c53', '#209f84'],
+		series: [27, 63],
+		labels: ['Anonymous Users', 'None Anonymous Users'],
+		legend: {
+			fontSize: '16px',  
+			show: false,
+		  },		 
+		}
+
+		var chartCircle1 = new ApexCharts(document.querySelector('#journalist-chartCircle'), optionsCircle);
+		chartCircle1.render();
+		
+	}
+
+    chartCircle();
+    chartBar();
+
+    </script>
 	
 	
 	

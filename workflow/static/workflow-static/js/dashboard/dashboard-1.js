@@ -6,112 +6,112 @@
 	
 	var screenWidth = $(window).width();
 		
-	var chartBar = function(){
+	// var chartBar = function(){
 		
-		var options = {
-			  series: [
-				{
-					name: 'Net Profit',
-					data: [44, 55, 90, 80, 25, 15, 70, 55, 35, 15, 70, 55, 95, 35],
-					//radius: 12,	
-				}, 
-				{
-				  name: 'Revenue',
-				  data: [15, 65, 15, 35, 30, 5, 40, 60, 10, 5, 40, 60, 10, 35]
-				}, 
+	// 	var options = {
+	// 		  series: [
+	// 			{
+	// 				name: 'Clicks',
+	// 				data: [44, 55, 90, 80, 25],
+	// 				//radius: 12,	
+	// 			}, 
+	// 			{
+	// 			  name: 'Reviews',
+	// 			  data: [15, 65, 15, 35, 30]
+	// 			}, 
 				
-			],
-				chart: {
-				type: 'bar',
-				height: 350,
+	// 		],
+	// 			chart: {
+	// 			type: 'bar',
+	// 			height: 350,
 				
-				toolbar: {
-					show: false,
-				},
+	// 			toolbar: {
+	// 				show: false,
+	// 			},
 				
-			},
-			plotOptions: {
-			  bar: {
-				horizontal: false,
-				columnWidth: '55%',
-				endingShape: 'rounded'
-			  },
-			},
-			colors:['#450b5a', '#ff2c53'],
-			dataLabels: {
-			  enabled: false,
-			},
-			markers: {
-		shape: "circle",
-		},
+	// 		},
+	// 		plotOptions: {
+	// 		  bar: {
+	// 			horizontal: false,
+	// 			columnWidth: '55%',
+	// 			endingShape: 'rounded'
+	// 		  },
+	// 		},
+	// 		colors:['#450b5a', '#ff2c53'],
+	// 		dataLabels: {
+	// 		  enabled: false,
+	// 		},
+	// 		markers: {
+	// 	shape: "circle",
+	// 	},
 		
 		
-			legend: {
-				show: true,
-				fontSize: '12px',
-				labels: {
-					colors: '#000000',
+	// 		legend: {
+	// 			show: true,
+	// 			fontSize: '12px',
+	// 			labels: {
+	// 				colors: '#000000',
 					
-					},
-				markers: {
-				width: 18,
-				height: 18,
-				strokeWidth: 0,
-				strokeColor: '#fff',
-				fillColors: undefined,
-				radius: 12,	
-				}
-			},
-			stroke: {
-			  show: true,
-			  width: 1,
-			  colors: ['transparent']
-			},
-			grid: {
-				borderColor: '#eee',
-			},
-			xaxis: {
+	// 				},
+	// 			markers: {
+	// 			width: 18,
+	// 			height: 18,
+	// 			strokeWidth: 0,
+	// 			strokeColor: '#fff',
+	// 			fillColors: undefined,
+	// 			radius: 12,	
+	// 			}
+	// 		},
+	// 		stroke: {
+	// 		  show: true,
+	// 		  width: 1,
+	// 		  colors: ['transparent']
+	// 		},
+	// 		grid: {
+	// 			borderColor: '#eee',
+	// 		},
+	// 		xaxis: {
 				
-			  categories: ['01', '02', '03', '04', '05', '06', '07', '08', '09'],
-			  labels: {
-			   style: {
-				  colors: '#787878',
-				  fontSize: '13px',
-				  fontFamily: 'poppins',
-				  fontWeight: 100,
-				  cssClass: 'apexcharts-xaxis-label',
-				},
-			  },
-			  crosshairs: {
-			  show: false,
-			  }
-			},
-			yaxis: {
-				labels: {
-			   style: {
-				  colors: '#787878',
-				  fontSize: '13px',
-				   fontFamily: 'poppins',
-				  fontWeight: 100,
-				  cssClass: 'apexcharts-xaxis-label',
-			  },
-			  },
-			},
-			fill: {
-			  opacity: 1
-			},
-			tooltip: {
-			  y: {
-				formatter: function (val) {
-				  return "$ " + val + " thousands"
-				}
-			  }
-			}
-			};
+	// 		  categories: ['Articel', 'Article', 'Article', 'Article', 'Article'],
+	// 		  labels: {
+	// 		   style: {
+	// 			  colors: '#787878',
+	// 			  fontSize: '13px',
+	// 			  fontFamily: 'poppins',
+	// 			  fontWeight: 100,
+	// 			  cssClass: 'apexcharts-xaxis-label',
+	// 			},
+	// 		  },
+	// 		  crosshairs: {
+	// 		  show: false,
+	// 		  }
+	// 		},
+	// 		yaxis: {
+	// 			labels: {
+	// 		   style: {
+	// 			  colors: '#787878',
+	// 			  fontSize: '13px',
+	// 			   fontFamily: 'poppins',
+	// 			  fontWeight: 100,
+	// 			  cssClass: 'apexcharts-xaxis-label',
+	// 		  },
+	// 		  },
+	// 		},
+	// 		fill: {
+	// 		  opacity: 1
+	// 		},
+	// 		tooltip: {
+	// 		  y: {
+	// 			formatter: function (val) {
+	// 			  return "$ " + val + " thousands"
+	// 			}
+	// 		  }
+	// 		}
+	// 		};
 
-			var chartBar1 = new ApexCharts(document.querySelector("#chartBar"), options);
-			chartBar1.render();
-	}
+	// 		var chartBar1 = new ApexCharts(document.querySelector("#journalist-chartBar"), options);
+	// 		chartBar1.render();
+	// }
 	
 	var chartStrock = function(){
 		//var date = new Date(1327359600000);
@@ -228,73 +228,73 @@
       }
 		
 	}
-	var chartCircle = function(){
+	// var chartCircle = function(){
 		
 		
-		var optionsCircle = {
-		  chart: {
-			type: 'radialBar',
-			//width:320,
-			height: 350,
-			offsetY: 0,
-			offsetX: 0,
+	// 	var optionsCircle = {
+	// 	  chart: {
+	// 		type: 'radialBar',
+	// 		//width:320,
+	// 		height: 350,
+	// 		offsetY: 0,
+	// 		offsetX: 0,
 			
-		  },
-		  plotOptions: {
-			radialBar: {
-			  size: undefined,
-			  inverseOrder: false,
-			  hollow: {
-				margin: 0,
-				size: '35%',
-				background: 'transparent',
-			  },
+	// 	  },
+	// 	  plotOptions: {
+	// 		radialBar: {
+	// 		  size: undefined,
+	// 		  inverseOrder: false,
+	// 		  hollow: {
+	// 			margin: 0,
+	// 			size: '35%',
+	// 			background: 'transparent',
+	// 		  },
 			  
 			  
 			  
-			  track: {
-				show: true,
-				background: '#e1e5ff',
-				strokeWidth: '10%',
-				opacity: 1,
-				margin: 15, // margin is in pixels
-			  },
+	// 		  track: {
+	// 			show: true,
+	// 			background: '#e1e5ff',
+	// 			strokeWidth: '10%',
+	// 			opacity: 1,
+	// 			margin: 15, // margin is in pixels
+	// 		  },
 
 
-			},
-		  },
-		  responsive: [{
-          breakpoint: 480,
-          options: {
-			chart: {
-			offsetY: 0,
-			offsetX: 0
-		  },	
-            legend: {
-              position: 'bottom',
-              offsetX:0,
-              offsetY: 0
-            }
-          }
-        }],
+	// 		},
+	// 	  },
+	// 	  responsive: [{
+    //       breakpoint: 480,
+    //       options: {
+	// 		chart: {
+	// 		offsetY: 0,
+	// 		offsetX: 0
+	// 	  },	
+    //         legend: {
+    //           position: 'bottom',
+    //           offsetX:0,
+    //           offsetY: 0
+    //         }
+    //       }
+    //     }],
 		
-		fill: {
-          opacity: 1
-        },
+	// 	fill: {
+    //       opacity: 1
+    //     },
 		
-		colors:['#ff2c53', '#209f84', '#ff5c00'],
-		series: [71, 63, 90],
-		labels: ['New', 'Recover', 'In Treatment'],
-		legend: {
-			fontSize: '16px',  
-			show: false,
-		  },		 
-		}
+	// 	colors:['#ff2c53', '#209f84', '#ff5c00'],
+	// 	series: [71, 63, 90],
+	// 	labels: ['New', 'Recover', 'In Treatment'],
+	// 	legend: {
+	// 		fontSize: '16px',  
+	// 		show: false,
+	// 	  },		 
+	// 	}
 
-		var chartCircle1 = new ApexCharts(document.querySelector('#chartCircle'), optionsCircle);
-		chartCircle1.render();
+	// 	var chartCircle1 = new ApexCharts(document.querySelector('#chartCircle'), optionsCircle);
+	// 	chartCircle1.render();
 		
-	}
+	// }
 	
 	var chartTimeline = function(){
 		
@@ -397,7 +397,7 @@
 			
 			
 			load:function(){
-				chartBar();	
+				// chartBar();	
 				chartStrock();	
 				chartCircle();
 				chartTimeline();				

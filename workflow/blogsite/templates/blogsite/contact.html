@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/templatemo-stand-blog.css' %}">
     <link rel="stylesheet" href="{% static 'blogsite-static/assets/css/owl.css' %}">
 
+    <link href="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.css' %}" rel="stylesheet">
+
   </head>
 
   <body>
@@ -99,25 +101,26 @@
                     </div>
                     <div class="content">
                       <form id="contact" action="" method="post">
+                        {% csrf_token %}
                         <div class="row">
                           <div class="col-md-6 col-sm-12">
                             <fieldset>
-                              <input name="name" type="text" id="name" placeholder="Your name" required="">
+                              <input name="name" type="text" id="name" placeholder="Your name" required maxlength="35">
                             </fieldset>
                           </div>
                           <div class="col-md-6 col-sm-12">
                             <fieldset>
-                              <input name="email" type="text" id="email" placeholder="Your email" required="">
+                              <input name="email" type="text" id="email" placeholder="Your email" required>
                             </fieldset>
                           </div>
                           <div class="col-md-12 col-sm-12">
                             <fieldset>
-                              <input name="subject" type="text" id="subject" placeholder="Subject">
+                              <input name="subject" type="text" id="subject" placeholder="Subject"  maxlength="35">
                             </fieldset>
                           </div>
                           <div class="col-lg-12">
                             <fieldset>
-                              <textarea name="message" rows="6" id="message" placeholder="Your Message" required=""></textarea>
+                              <textarea name="message" rows="6" id="message" placeholder="Your Message" required></textarea>
                             </fieldset>
                           </div>
                           <div class="col-lg-12">
@@ -213,6 +216,23 @@
           }
       }
     </script>
+
+    <script src="{% static 'workflow-static/vendor/sweetalert2/dist/sweetalert2.min.js' %}"></script>
+
+    {% if success_message %}
+    <input type="hidden" id="success_message" value="{{success_message}}">
+    <script>
+      $(document).ready(function() {
+        var messages = $('#success_message').val();
+
+        Swal.fire({
+          title: 'Message Submission',
+          text: messages,
+          icon: 'success'
+        })			
+      });	
+    </script>
+    {% endif %}
 
   </body>
 </html>

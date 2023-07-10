@@ -1023,13 +1023,13 @@
 	</script>
 	{% endif %}	
 
-	{% if task_messages or task_error_messages %}	
+	{% if task_messages or task_error_messages or in_progress %}	
 	<script>			
 		document.getElementById('taskCollapseAccordion').click();
 	</script>
 	{% endif %}	
 
-	{% if approval_messages %}
+	{% if approval_messages or submitted %}
 	<script>			
 		document.getElementById('submittedTaskCollapseAccordion').click();
 	</script>

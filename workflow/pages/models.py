@@ -39,10 +39,16 @@ class Project(models.Model):
         return f'{self.title} Project'
 
 class Tags(models.Model):
-    tag_name = models.CharField(max_length=20)
+    tag_name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f'{self.tag_name} Tag'
 
 class Category(models.Model):
-    category_name = models.CharField(max_length=20)
+    category_name = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f'{self.category_name} Category'
 
 class Task(models.Model):
     title = models.CharField(max_length=30)
@@ -52,12 +58,14 @@ class Task(models.Model):
     end_date_time = models.DateTimeField(null=True)
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
     editor = models.ForeignKey(Editor, on_delete=models.SET_NULL, null=True)
+    categories = models.ManyToManyField(Category, related_name='categories')
     tags = models.ManyToManyField(Tags, related_name='tags')
     journalists = models.ManyToManyField(Journalist, related_name='tasks')  
     publication_date = models.DateTimeField(null=True)
     status = models.CharField(max_length=20, default=TaskStatusChoices.PENDING, choices=TaskStatusChoices.choices)
     progress = models.IntegerField(default=10)
     submission_status = models.CharField(max_length=20, default=SubmissionStatusChoices.IN_PROGRESS, choices=SubmissionStatusChoices.choices)
+    click_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.title} Task'
@@ -89,16 +97,18 @@ class Task(models.Model):
 class Reviews(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='reviews')
     name = models.CharField(max_length=70)
+    email = models.EmailField(null=True)
     review = models.TextField()
     rating = models.IntegerField()
     review_date = models.DateTimeField(null=True)
 
     def __str__(self):
         return f'{self.task.title} Review'
+
+class Click(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='clicks')
+    date = models.DateField()
     
-
-
-
 class Article(models.Model):
     task = models.OneToOneField(Task, on_delete=models.CASCADE, related_name='article')
     title = models.CharField(max_length=30, null=True)

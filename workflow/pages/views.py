@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.core.files import File
-from django.db.models import Count, Q, Exists, OuterRef
+from django.db.models import Count, Q, Exists, OuterRef, Sum, Max, F
 from django.contrib.auth.decorators import login_required
-from users.models import CapacityChoices, Director, Editor, Journalist
-from .models import SectionRejections, GalleryRejections, TaskRejections, Image, Project, Task, Article, ArticleSection, ProjectStatusChoices, ProposedTitleSubText, TaskStatusChoices, UserNotification, TaskNotification, Instruction, SubmissionStatusChoices, PhotoGallery
+from users.models import CapacityChoices, Director, Editor, Journalist, Specialties, Employee
+from .models import Reviews, Category, SectionRejections, GalleryRejections, TaskRejections, Image, Project, Task, Article, ArticleSection, ProjectStatusChoices, ProposedTitleSubText, TaskStatusChoices, UserNotification, TaskNotification, Instruction, SubmissionStatusChoices, PhotoGallery
 from django.utils import timezone
 from datetime import time, datetime
+from collections import Counter
 
 #Journalist Views
 
@@ -29,9 +30,12 @@ def test_page(request):
 @login_required
 def login_redirect(request):
     user = request.user
+    if not(hasattr(user, 'profile')):
+       return redirect('logout')
     capacity = user.profile.capacity
     print(capacity)
     print(user.profile.id_card_number)
+
 
     if capacity == CapacityChoices.WRITER:
         return redirect('journalist-home')
@@ -48,17 +52,86 @@ def login_redirect(request):
 @login_required
 def journalist_dashboard_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or ((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST))):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
+    journalist = Journalist.objects.get(user=user)
+
+    tasks = journalist.tasks.all()
+
+    num_tasks = tasks.count()
+
+    num_incomplete_tasks = journalist.tasks.exclude(progress=100).all().count()
+    num_incomplete_tasks_percentage = 0
+
+    num_complete_tasks = journalist.tasks.filter(progress=100).all().count()
+    num_complete_tasks_percentage = 0
+
+    num_reviews = 0
+    num_reviews_anonymous = 0    
+    num_reviews_non_anonymous = 0
+
+    num_reviews_anonymous_percentage = 0
+    num_reviews_non_anonymous_percentage = 0
+
+
+
+    most_urgent_task = None
+    most_engaged_task = None
+    latest_notification = None
+
+    if tasks:
+        if num_complete_tasks>0:
+            num_complete_tasks_percentage = int(100*(num_complete_tasks/num_tasks))
+        
+        if num_incomplete_tasks>0:
+            num_incomplete_tasks_percentage = int(100*(num_incomplete_tasks/num_tasks))
+        
+        most_urgent_task = tasks.order_by('deadline').first()
+
+        latest_notifications = TaskNotification.objects.values('task').annotate(latest_creation_time=Max('creation_time'))
+
+        if latest_notifications:
+            task_ids = [notification['task'] for notification in latest_notifications]
+            latest_task_notifications = TaskNotification.objects.filter(task__in=task_ids, creation_time__in=latest_notifications.values('latest_creation_time'))
+            latest_notification = latest_task_notifications[0]
+        
+        most_engaged_task = tasks.annotate(total_engagement=F('click_count')+F('reviews__count')).order_by('-total_engagement').first()
+
+        
+        num_reviews = most_engaged_task.reviews.all().count()
+        num_reviews_anonymous = most_engaged_task.reviews.filter(name='anonymous user').count()
+        num_reviews_anonymous = most_engaged_task.reviews.exclude(name='anonymous user').count()
+
+        if num_reviews>0:
+            if num_reviews_anonymous>0:
+                num_reviews_anonymous_percentage = int(100*(num_reviews_anonymous/num_reviews))
+            if num_reviews_non_anonymous>0:
+                num_reviews_non_anonymous_percentage = int(100*(num_reviews_non_anonymous/num_reviews))
+
+    context['num_reviews'] = num_reviews
+    context['num_reviews_anonymous'] = num_reviews_anonymous
+    context['num_reviews_non_anonymous'] = num_reviews_non_anonymous
+    context['num_reviews_anonymous_percentage'] = num_reviews_anonymous_percentage
+    context['num_reviews_non_anonymous_percentage'] = num_reviews_non_anonymous_percentage
+
+    context['num_incomplete_tasks'] = num_incomplete_tasks
+    context['num_incomplete_tasks_percentage'] = num_incomplete_tasks_percentage
+
+    context['num_complete_tasks'] = num_complete_tasks
+    context['num_complete_tasks_percentage'] = num_complete_tasks_percentage
+
+    context['most_urgent_task'] = most_urgent_task
+    context['latest_notification'] = latest_notification
+
     context['page_title'] = 'Dashboard' 
     return render(request, "journalist/dashboard.html", context)
 
 @login_required
 def journalist_article_list_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -77,7 +150,7 @@ def journalist_article_list_view(request):
 def journalist_current_article_view(request, task_id):
     user = request.user
     
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     
@@ -443,7 +516,7 @@ def journalist_current_article_view(request, task_id):
 @login_required
 def journalist_reviews_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -453,7 +526,7 @@ def journalist_reviews_view(request):
 @login_required
 def journalist_submitted_articles_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -463,7 +536,7 @@ def journalist_submitted_articles_view(request):
 @login_required
 def journalist_messages_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -472,7 +545,7 @@ def journalist_messages_view(request):
 @login_required
 def journalist_notifications_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -482,7 +555,7 @@ def journalist_notifications_view(request):
 @login_required
 def journalist_profile_view(request):
     user = request.user
-    if((user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
+    if(not(hasattr(user, 'profile')) or (user.profile.capacity!=CapacityChoices.WRITER) and (user.profile.capacity!=CapacityChoices.PHOTOJOURNALIST)):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout') 
     context={}
@@ -493,19 +566,167 @@ def journalist_profile_view(request):
 @login_required# Editors Views
 def editor_dashboard_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
     editor_user = Editor.objects.get(user=user)
     context={}
+
+    tasks = Task.objects.filter(editor=editor_user)
+
+    num_tasks = tasks.count()
+    num_assigned_tasks = tasks.filter(status=TaskStatusChoices.ASSIGNED).count()
+    num_progressing_tasks = tasks.filter(status=TaskStatusChoices.IN_PROGRESS).count()
+    num_submitted_tasks = tasks.filter(status=TaskStatusChoices, submission_status=SubmissionStatusChoices.SUBMITTED).count()
+    num_approved_tasks = tasks.filter(status=TaskStatusChoices.APPROVED).count()
+    
+    assigned_tasks_percentage = 0
+    progressing_tasks_percentage = 0
+    submitted_tasks_percentage = 0
+    approved_tasks_percentage = 0
+
+    if tasks:
+        if num_assigned_tasks>0:
+            assigned_tasks_percentage = int(100*(num_assigned_tasks/num_tasks))
+        if num_progressing_tasks>0:
+            progressing_tasks_percentage = int(100*(num_progressing_tasks/num_tasks))
+        if num_submitted_tasks>0:
+            submitted_tasks_percentage = int(100*(num_submitted_tasks/num_tasks))
+        if num_approved_tasks>0:
+            approved_tasks_percentage = int(100*(num_approved_tasks/num_tasks))
+
+    context['num_assigned_tasks'] = num_assigned_tasks
+    context['assigned_tasks_percentage'] = assigned_tasks_percentage
+    context['num_progressing_tasks'] = num_progressing_tasks
+    context['progressing_tasks_percentage'] = progressing_tasks_percentage
+    context['num_submitted_tasks'] = num_submitted_tasks
+    context['submitted_tasks_percentage'] = submitted_tasks_percentage
+    context['num_approved_tasks'] = num_approved_tasks    
+    context['approved_tasks_percentage'] = approved_tasks_percentage
+
+    avg_submission_time = 0
+    avg_num_rejections = 0
+    avg_team_size = 0
+
+    num_clicks = 0
+    num_reviews = 0
+    avg_rating = 0
+
+    
+
+    if tasks:
+        journalist_counter = Counter()
+        for task in tasks:
+            journalist_counter.update(task.journalists.values_list('id', flat=True))
+        
+        most_used_journalist_list = journalist_counter.most_common(5)
+        most_used_journalist = most_used_journalist_list[0]
+        most_used_journalist_list = most_used_journalist_list[1:]
+
+        num_clicks = tasks.aggregate(total_clicks=Sum('click_count'))['total_clicks']
+        num_reviews = tasks.aggregate(total_reviews=Count('reviews'))['total_reviews']
+        sum_avg_rating = 0
+        counter = 0
+        for task in tasks:
+            sum_avg_rating += task.average_rating
+            counter+=1
+        
+        if sum_avg_rating>0:
+            avg_rating = round((sum_avg_rating/counter), 1)
+
+        for task in tasks:
+            if task.deadline and task.end_date_time:
+                time_diff = task.deadline - task.end_date_time
+                total_time_diff += time_diff.total_seconds()
+        
+        if total_time_diff:
+            avg_submission_time = total_time_diff/tasks.count()
+    
+        total_rejections = 0
+
+        for task in tasks:
+            task_rejections = task.task_rejections.count()
+            total_rejections += task_rejections
+        if total_rejections>0:
+            avg_num_rejections = total_rejections / tasks.count()
+        
+        for task in tasks:
+            task_journalists = task.journalists.count()
+            total_journalists += task_journalists
+        if total_journalists>0:
+            avg_team_size = round(total_journalists / tasks.count(), 1)
+
+    context['avg_submission_time'] = avg_submission_time
+    context['avg_num_rejections'] = avg_num_rejections
+    context['avg_team_size'] = avg_team_size
+    context['num_clicks'] = num_clicks
+    context['num_reviews'] = num_reviews
+    context['avg_rating'] = avg_rating
+
+
+    # calculate top journalists and journalist lists
+    most_used_journalist = ''
+    most_used_journalist_list = ''
+
+    top_journalist = ''
+    top_journalist_list = ''
+
+    if tasks:
+        journalist_counter = Counter()
+        for task in tasks:
+            journalist_counter.update(task.journalists.values_list('id', flat=True))
+        
+        most_used_journalist_list = journalist_counter.most_common(6)
+
+        most_used_journalist = most_used_journalist_list[0][0]
+
+        if most_used_journalist_list[0][1] == most_used_journalist_list[1][1]:
+            # Handle tie for 5th place
+            most_used_journalist_list = most_used_journalist_list[1:]
+        else:
+            most_used_journalist_list = most_used_journalist_list[:5]
+
+        # Retrieve the journalist instances
+        most_used_journalist = Journalist.objects.get(id=most_used_journalist)
+        most_used_journalist_list = [Journalist.objects.get(id=journalist_id) for journalist_id, _ in most_used_journalist_list]
+
+        engagement_counter = Counter()
+        rejection_counter = Counter()
+
+        for task in tasks:
+            engagement_counter.update(task.reviews.values_list('journalist__id', flat=True))
+            rejection_counter.update(task.section_rejections.values_list('article_section__journalist__id', flat=True))
+            rejection_counter.update(task.gallery_rejections.values_list('photo_gallery__journalist__id', flat=True))
+        
+        # Top journalist with the most engagement
+        top_journalist = engagement_counter.most_common(1)[0][0]
+
+        top_journalist_list = [journalist_id for journalist_id, _ in engagement_counter.most_common(6)][1:]
+
+        least_rejection_journalist = rejection_counter.most_common(1)[0][0]
+
+        least_rejection_journalists = rejection_counter.most_common(6)[1:]
+
+        if least_rejection_journalists[0][1] == least_rejection_journalists[1][1]:
+            # Handle tie for 5th place
+            least_rejection_journalists = least_rejection_journalists[1:]
+        else:
+            least_rejection_journalists = least_rejection_journalists[:5]
+        
+        top_journalist = Journalist.objects.get(id=top_journalist)
+        top_journalist_list = [Journalist.objects.get(id=journalist_id) for journalist_id in top_journalist_list]
+
+        least_rejection_journalist = Journalist.objects.get(id=least_rejection_journalist)
+        least_rejection_journalists = [Journalist.objects.get(id=journalist_id) for journalist_id, _ in least_rejection_journalists]
+
     context['page_title'] = 'Dashboard'
     return render(request, "editor/dashboard.html", context)
 
 @login_required
 def editor_article_list_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -590,7 +811,11 @@ def editor_article_list_view(request):
             Q(num_incomplete_tasks__lt=2) | Q(has_no_tasks=True)
         )
     
+    if(request.GET.get('in_progress')):
+        context['in_progress'] = True
     
+    if(request.GET.get('submitted')):
+        context['submitted'] = True
 
     new_tasks = Task.objects.filter(editor=editor_user, status=TaskStatusChoices.ASSIGNED)
     progressing_tasks = Task.objects.filter(editor=editor_user, status=TaskStatusChoices.IN_PROGRESS)
@@ -607,7 +832,7 @@ def editor_article_list_view(request):
 @login_required
 def editor_current_article_view(request, task_id):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -835,7 +1060,7 @@ def editor_current_article_view(request, task_id):
 @login_required
 def editor_reviews_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -847,7 +1072,7 @@ def editor_reviews_view(request):
 @login_required
 def editor_submitted_articles_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -859,7 +1084,7 @@ def editor_submitted_articles_view(request):
 @login_required
 def editor_messages_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -871,7 +1096,7 @@ def editor_messages_view(request):
 @login_required
 def editor_notifications_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -883,7 +1108,7 @@ def editor_notifications_view(request):
 @login_required
 def editor_profile_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.EDITOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.EDITOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')    
     
@@ -897,20 +1122,111 @@ def editor_profile_view(request):
 @login_required# Director's Views
 def director_dashboard_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
     
 
     context={}
+
+    director_user = Director.objects.get(user=user)
+
+    projects = Project.objects.filter(director=director_user)
+
+    num_projects = projects.count()
+
+
+    num_active_projects = 0
+    percentage_active_projects = 0
+
+    if num_projects>0:
+        num_active_projects = projects.filter(status=ProjectStatusChoices.ACTIVE)
+        if num_active_projects>0:
+            percentage_active_projects = int(100*(num_active_projects/num_projects))
+    
+    context['num_projects'] = num_projects
+    context['percentage_active_projects'] = percentage_active_projects
+
+    num_tasks = 0
+    num_tasks_in_progress = 0
+    num_tasks_in_progress_percentage = 0
+    num_tasks_submitted = 0
+    num_tasks_submitted_percentage = 0
+    num_tasks_approved = 0
+    num_tasks_approved_percentage = 0
+
+    if projects:            
+        tasks = Task.objects.filter(project__in=projects)
+        num_tasks = tasks.count()
+        num_tasks_in_progress = tasks.filter(submission_status=SubmissionStatusChoices.IN_PROGRESS)
+
+        if num_tasks_in_progress > 0:
+            num_tasks_in_progress_percentage = int(100*(num_tasks_in_progress/num_tasks))
+        
+        num_tasks_submitted = tasks.filter(submission_status=SubmissionStatusChoices.SUBMITTED)
+
+        if num_tasks_submitted > 0:
+            num_tasks_submitted_percentage = int(100*(num_tasks_submitted/num_tasks))
+        
+        num_tasks_approved = tasks.filter(status=TaskStatusChoices.APPROVED)
+
+        if num_tasks_approved > 0:
+            num_tasks_approved_percentage = int(100*(num_tasks_approved/num_tasks))
+    
+    context['num_tasks'] = num_tasks
+    context['num_tasks_in_progress'] = num_tasks_in_progress
+    context['num_tasks_in_progress_percentage'] = num_tasks_in_progress_percentage
+    context['num_tasks_submitted'] = num_tasks_submitted
+    context['num_tasks_submitted_percentage'] = num_tasks_submitted_percentage
+    context['num_tasks_approved'] = num_tasks_approved
+    context['num_tasks_approved_percentage'] = num_tasks_approved_percentage
+
+    num_clicks = 0
+    num_reviews = 0
+    num_reviews_anonymous = 0    
+    num_reviews_non_anonymous = 0
+
+    num_reviews_anonymous_percentage = 0
+    num_reviews_non_anonymous_percentage = 0
+
+    most_engaging_piece = ''
+    latest_review = ''
+
+    if projects:
+        tasks = Task.objects.filter(project__in=projects)
+        num_clicks = tasks.aggregate(total_clicks=Sum('click_count'))['total_clicks']
+
+        num_reviews = tasks.aggregate(total_reviews=Count('reviews'))['total_reviews']
+        num_reviews_anonymous = tasks.aggregate(total_reviews_anonymous=Count('reviews', filter=Q(reviews__name='anonymous user')))['total_reviews_anonymous']
+        num_reviews_non_anonymous = tasks.aggregate(total_reviews_non_anonymous=Count('reviews', filter=~Q(reviews__name='anonymous user')))['total_reviews_non_anonymous']
+
+        if num_reviews>0:
+            if num_reviews_anonymous>0:
+                num_reviews_anonymous_percentage = int(100*(num_reviews_anonymous/num_reviews))
+            if num_reviews_non_anonymous>0:
+                num_reviews_non_anonymous_percentage = int(100*(num_reviews_non_anonymous/num_reviews))
+        
+        most_engaging_piece = tasks.annotate(num_reviews=Count('reviews')).order_by('-num_reviews', '-click_count').first()
+        latest_review = tasks.annotate(max_review_date=Max('reviews__review_date')).order_by('-max_review_date').first().reviews.last()
+    
+    context['num_clicks'] = num_clicks
+
+    context['num_reviews_anonymous'] = num_reviews_anonymous    
+    context['num_reviews_non_anonymous'] = num_reviews_non_anonymous    
+    context['num_reviews_anonymous_percentage'] = num_reviews_anonymous_percentage
+    context['num_reviews_non_anonymous_percentage'] = num_reviews_non_anonymous_percentage
+    context['most_engaging_piece'] = most_engaging_piece
+    context['latest_review'] = latest_review
+
     context['page_title'] = 'Dashboard'
+    
     return render(request, "director/dashboard.html", context)
 
 @login_required
 def director_article_list_view(request):
     user = request.user
     director_user = Director.objects.get(user=user)
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1149,8 +1465,7 @@ def director_article_list_view(request):
             context['task_messages'] = task_messages
 
         edit_task.save()
-        
-    
+           
     if (request.method=='POST' and ('new-project-title' in request.POST)):
         project = Project.objects.get(id=request.POST.get('project-id'))
         all_tasks_under_project = Task.objects.filter(project=project)
@@ -1229,6 +1544,12 @@ def director_article_list_view(request):
     pending_tasks = tasks.exclude(submission_status=SubmissionStatusChoices.SUBMITTED)
     submitted_tasks = tasks.filter(submission_status=SubmissionStatusChoices.SUBMITTED)
 
+    if(request.GET.get('in_progress')):
+        context['in_progress'] = True
+    
+    if(request.GET.get('submitted')):
+        context['submitted'] = True
+
 
     tasks_count = tasks.count()
 
@@ -1248,7 +1569,7 @@ def director_article_list_view(request):
 @login_required
 def director_current_article_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1260,7 +1581,7 @@ def director_current_article_view(request):
 @login_required
 def director_reviews_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1271,7 +1592,7 @@ def director_reviews_view(request):
 @login_required
 def director_submitted_articles_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1282,7 +1603,7 @@ def director_submitted_articles_view(request):
 @login_required
 def director_messages_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1293,7 +1614,7 @@ def director_messages_view(request):
 @login_required
 def director_notifications_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
@@ -1304,11 +1625,55 @@ def director_notifications_view(request):
 @login_required
 def director_profile_view(request):
     user = request.user
-    if(user.profile.capacity!=CapacityChoices.DIRECTOR):
+    if(not(hasattr(user, 'profile')) or user.profile.capacity!=CapacityChoices.DIRECTOR):
         messages.error(request, 'your are not allowed to access the page.', extra_tags='error_message')
         return redirect('logout')
 
     context={}
+
+    if(request.method == 'POST'):
+        
+        password = request.POST.get('password', False)
+        c_password = request.POST.get('confirm_password', False)
+        bioline = request.POST.get('bioline', False)
+
+        profile_settings_messages = []
+        profile_settings_errors = []
+
+        if(password):
+
+            if(c_password):
+                if(password==c_password):
+                    print(password==c_password)
+                    user.set_password(password)
+                    user.save()
+                    profile_settings_messages.append('Password changed successfully')
+                else:
+                    profile_settings_errors.append('Make sure passwords match. Password not changed')
+            else:
+                profile_settings_errors.append('Make sure passwords match. Password not changed')
+        
+        if(c_password and not(password)):
+            profile_settings_errors.append('Make sure passwords match. Password not changed')
+        
+        
+        profile_pic = request.FILES.get('profile_picture', False)     
+        
+        if profile_pic:
+            user.profile.profile_picture = profile_pic
+            user.profile.save()
+            profile_settings_messages.append('New Profile picture saved successfully')
+        
+        if bioline:
+            user.profile.bioline = bioline
+            user.profile.save()
+            profile_settings_messages.append('New Bioline saved successfully')
+        
+        context['profile_settings_messages'] = profile_settings_messages
+        context['profile_settings_errors'] = profile_settings_errors
+
+    employee_object = Employee.objects.get(id_card_number=user.username)
+    context['employee'] = employee_object
     context['page_title'] = 'Profile Settings'
     return render(request, "director/profile-settings.html", context)
 

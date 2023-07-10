@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tags, PhotoGallery, Image, Project, Task, TaskNotification, Instruction, ProposedTitleSubText, ArticleSection, Article, UserNotification
+from .models import Category, Tags, PhotoGallery, Image, Project, Task, TaskNotification, Instruction, ProposedTitleSubText, ArticleSection, Article, UserNotification
 
 # Register your models here.
 admin.site.register(Project)
@@ -13,3 +13,4 @@ admin.site.register(UserNotification)
 admin.site.register(PhotoGallery)
 admin.site.register(Image)
 admin.site.register(Tags)
+admin.site.register(Category)

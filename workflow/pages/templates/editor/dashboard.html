@@ -45,6 +45,328 @@
         ***********************************-->
         <div class="content-body">
             <!-- row -->
+            <div class="container-fluid">
+                <div class="form-head d-flex mb-1 align-items-start flex-wrap justify-content-between">
+                    <div class="me-auto d-lg-block">
+                        <h3 class="text-primary font-w600">Dashboard</h3>
+                        <p class="mb-0"><?php echo $_SESSION['usertype'];?></p>
+                    </div>
+                    <a href="{% url 'director-article-list' %}?submitted=1" class="btn btn-danger ms-3">
+                        <i class="flaticon-381-notepad"></i>
+                        Checkout Submissions
+                    </a>
+                </div>
+                <hr>
+                <div>
+                    <h4>Tasks</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">
+                            
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-dark mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">ASSIGNED TASKS</p>
+                                                        <h3 class="text-white">{{num_assigned_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{assigned_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{assigned_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'editor-article-list' %}" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-dark mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">TASKS IN PROGRESS</p>
+                                                        <h3 class="text-white">{{num_progressing_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{progressing_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{progressing_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'editor-article-list' %}?in_progress=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                           
+
+
+                        </div>
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-dark mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">SUBMITTED TASKS</p>
+                                                        <h3 class="text-white">{{num_submitted_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{submitted_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{submitted_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'editor-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-6 col-lg-3 col-sm-6">
+                                    <div class="card overflow-hidden">
+                                        <div class="widget-stat card bg-dark mb-0">
+                                            <div class="card-body p-4">
+                                                <div class="media">
+                                                    <div class="media-body text-white">
+                                                        <p class="mb-1">APPROVED TASKS</p>
+                                                        <h3 class="text-white">{{num_approved_tasks}}</h3>
+                                                        <div class="progress mb-2 bg-light">
+                                                            <div class="progress-bar progress-animated bg-light" style="width: {{approved_tasks_percentage}}%"></div>
+                                                        </div>
+                                                        <small>{{approved_tasks_percentage}}% of all Tasks</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer border-0 mt-0 py-0">								
+                                            <a href="{% url 'editor-article-list' %}?submitted=1" class="btn  btn-sm btn-block w-100">
+                                                <i class="fa fa-bell-o"></i> Go to Page	>>				
+                                            </a>		
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <h4>TASKS BREAKDOWN</h4>
+                    <div class="row">
+                        <div class="col-xl-6 col-xxl-6">                            
+                            <div class="card">
+								<div class="card-header border-0 pb-0">
+									<h4 class="card-title">Averages</h4>
+								</div>
+								<div class="card-body pt-2">
+									<h4 class="text-dark font-w400">Total number of Clicks</h4>
+									<div class="row mx-0 align-items-center">
+										<div class="row">
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6> {{avg_submission_time}} </h6>
+													<span>Avarage Submission Time</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-success" style="width: 100%"></div>
+												</div>
+											</div>
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{avg_num_rejections}}</h6>
+													<span>Average Number of Rejections</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-info" style="width: 100%"></div>
+												</div>
+											</div>
+                                            <div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{avg_team_size}}</h6>
+													<span>Average Team Size</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-warning" style="width: 100%"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+
+
+                        <div class="col-xl-6 col-xxl-6">
+                            <div class="card">
+								<div class="card-header border-0 pb-0">
+									<h4 class="card-title">Visitor Metrics</h4>
+								</div>
+								<div class="card-body pt-2">
+									<h4 class="text-dark font-w400">Engagement Analytics</h4>
+									<div class="row mx-0 align-items-center">
+										<div class="row">
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6> {{num_clicks}} </h6>
+													<span>Number of Clicks</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-success" style="width: 100%"></div>
+												</div>
+											</div>
+											<div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{num_reviews}}</h6>
+													<span>Number of Reviews</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-info" style="width: 100%"></div>
+												</div>
+											</div>
+                                            <div class="col-12 mt-4">
+												<div class="d-flex justify-content-between">
+													<h6>{{avg_rating}}</h6>
+													<span>Average Rating</span>
+												</div>
+												<div class="progress">
+													<div class="progress-bar bg-warning" style="width: 100%"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <hr>
+                <div>
+                    <h4>Journalists Data</h4>
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-6 col-sm-6">
+                            <div class="card overflow-hidden">
+                                <div class="card-header bg-primary border-0 text-center pb-0">
+                                    <center><h4 class="card-title text-white mb-2">Most Associated Journalist</h4></center>
+                                </div>
+                                <div class="text-center p-3 overlay-box bg-danger" style="background-image: url(images/big/img1.jpg);">
+                                    <div class="profile-photo">
+                                        <img src="{% static 'workflow-static/images/profile/profile.png' %}" width="100" class="img-fluid rounded-circle" alt="">
+                                    </div>
+                                    <h3 class="mt-3 mb-1 text-white">Journalist Name</h3>
+                                    <p class="text-white mb-0">Journalist Type</p>
+                                </div>
+                                <div class="card-footer pt-0 pb-0 text-center">
+                                    <div class="row">
+                                        <div class="col-4 pt-3 pb-3 border-end">
+                                            <h3 class="mb-1">150</h3><span>tasks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0"><strong>Other Journalists</strong></span></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name </li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Surgeon</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Clinical</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Cardiology</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-6 col-sm-6">
+                            <div class="card overflow-hidden">
+                                <div class="card-header bg-primary border-0 text-center pb-0">
+                                    <center><h4 class="card-title text-white mb-2">Least Rejections Journalist</h4></center>
+                                </div>
+                                <div class="text-center p-3 overlay-box bg-warning">
+                                    <div class="profile-photo">
+                                        <img src="{% static 'workflow-static/images/profile/profile.png' %}" width="100" class="img-fluid rounded-circle" alt="">
+                                    </div>
+                                    <h3 class="mt-3 mb-1 text-white">Journalist Name</h3>
+                                    <p class="text-white mb-0">Journalist Type</p>
+                                </div>
+                                <div class="card-footer pt-0 pb-0 text-center">
+                                    <div class="row">
+                                        <div class="col-4 pt-3 pb-3 border-end">
+                                            <h3 class="mb-1">150</h3><span>pieces</span>
+                                        </div>
+                                        <div class="col-4 pt-3 pb-3 border-end">
+                                            <h3 class="mb-1">140</h3><span>rejects</span>
+                                        </div>
+                                        <div class="col-4 pt-3 pb-3">
+                                            <h3 class="mb-1">45</h3><span>ratio</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0"><strong>Other Journalists</strong></span></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name </li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Surgeon</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Clinical</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Cardiology</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-4 col-lg-12 col-sm-12">
+                            <div class="card overflow-hidden">
+                                <div class="card-header bg-primary border-0 text-center pb-0">
+                                    <center><h4 class="card-title text-white mb-2">Top Engagements Journalist</h4></center>
+                                </div>
+                                <div class="text-center p-3 overlay-box " style="background-image: url(images/big/img1.jpg);">
+                                    <div class="profile-photo">
+                                        <img src="{% static 'workflow-static/images/profile/profile.png' %}" width="100" class="img-fluid rounded-circle" alt="">
+                                    </div>
+                                    <h3 class="mt-3 mb-1 text-white">Journalist Name</h3>
+                                    <p class="text-white mb-0">Journalist Type</p>
+                                </div>
+                                <div class="card-footer pt-0 pb-0 text-center">
+                                    <div class="row">
+                                        <div class="col-4 pt-3 pb-3 border-end">
+                                            <h3 class="mb-1">150</h3><span>pieces</span>
+                                        </div>
+                                        <div class="col-4 pt-3 pb-3 border-end">
+                                            <h3 class="mb-1">140</h3><span>reviews</span>
+                                        </div>
+                                        <div class="col-4 pt-3 pb-3">
+                                            <h3 class="mb-1">45</h3><span>clicks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0"><strong>Other Journalists</strong></span></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name </li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Surgeon</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Clinical</strong></li>
+                                    <li class="list-group-item d-flex justify-content-between"><span class="mb-0">Journalist Name :</span><strong>Cardiology</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 			
         </div>
         <!--**********************************
